@@ -1,6 +1,6 @@
 # dalya
 
-An example component UI library for react
+<span style="color:red">[!Draft]</span> React UI Component Library refer to <a href='https://mui.com/'>mui</a> 🌻
 
 ## Installation
 
@@ -13,9 +13,5 @@ npm install dalya
 // with yarn
 yarn add dalya
 ```
-
-## Documentation
-
-[The documentation]()
 
 **Note**: `@emotion/react`and `@emotion/styled` are optional peer dependencies of `dalya`, so you need to install them yourself.

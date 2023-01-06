@@ -1,7 +1,7 @@
 {
   "name": "dalya",
-  "version": "1.0.10",
-  "description": "An example component UI library for react",
+  "version": "1.0.11",
+  "description": "React UI Component Library refer to mui",
   "main": "base/index.js",
   "types": "base/index.d.ts",
   "files": [
