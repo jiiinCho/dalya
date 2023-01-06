@@ -21,7 +21,9 @@
     "build": "rm -rf base && yarn build:base && yarn build:types",
     "build:base": "yarn babel ./src -d ./base --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
     "build:types": "yarn tsc -b tsconfig.build.json",
-    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-base"
+    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-base",
+    "storybook": "start-storybook -p 6006",
+    "build:storybook": "build-storybook"
   },
   "author": "jiiin✨",
   "license": "MIT",
