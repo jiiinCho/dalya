@@ -1,0 +1,15 @@
+# 
+/.git
+/.yarn
+
+# examples
+/examples
+
+# configuration files
+.**
+*.config.js
+
+# packages
+
+# production
+/packages/dalya-base/base

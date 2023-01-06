@@ -18,6 +18,4 @@ yarn add dalya
 
 [The documentation]()
 
-:::warning
 **Note**: `@emotion/react`and `@emotion/styled` are optional peer dependencies of `dalya`, so you need to install them yourself.
-:::

@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+yarn eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0
+yarn prettier '**/*.{js,tsx,ts,json,md}' --check --ignore-path .eslintignore

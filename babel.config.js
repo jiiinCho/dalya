@@ -24,7 +24,7 @@ module.exports = function (api) {
   if (isProduction) {
     return {
       ...defaultBabelConfig,
-      ignore: ['**/*.test.js', '**/*.stories.tsx'],
+      ignore: ['**/*.test.tsx', '**/*.stories.tsx'],
     };
   }
 

@@ -1,14 +1,15 @@
 import React from 'react';
+
 import { ButtonWrapper, ButtonBase } from './styles';
 
 export interface ButtonProps {
   label: string;
 }
 
-const Button = (props: ButtonProps) => {
+const Button = ({ label }: ButtonProps) => {
   return (
     <ButtonWrapper>
-      <ButtonBase>{props.label}</ButtonBase>
+      <ButtonBase>{label}</ButtonBase>
     </ButtonWrapper>
   );
 };
