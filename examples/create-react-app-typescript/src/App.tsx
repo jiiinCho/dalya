@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-
+import { Button } from 'dalya';
 function App() {
   return (
     <div className="App">
@@ -18,6 +18,7 @@ function App() {
         >
           Learn React
         </a>
+        <Button label="dalya🌻"></Button>
       </header>
     </div>
   );
