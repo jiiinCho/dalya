@@ -1,10 +1,10 @@
 {
   "name": "dalya",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "An example component UI library for react",
-  "main": "./src/index.js",
+  "main": "base/index.js",
   "files": [
-    "build"
+    "base"
   ],
   "keywords": [
     "react",
@@ -16,10 +16,9 @@
     "url": "https://github.com/jiiinCho/dalya.git",
     "directory": "packages/dalya-base"
   },
-  "types": "build/index.d.ts",
+  "types": "base/index.d.ts",
   "scripts": {
-    "build:umd": "rm -rf build && rollup -c scripts/rollup.config.mjs",
-    "release": "yarn build:umd && npm publish build"
+    "build": "rm -rf base && rollup -c scripts/rollup.config.mjs"
   },
   "author": "jiiin✨",
   "license": "MIT",
@@ -43,5 +42,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "react-is": "^18.2.0"
   }
 }

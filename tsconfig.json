@@ -17,5 +17,5 @@
     "lib": ["es2020", "dom"],
     "types": ["node", "react"]
   },
-  "exclude": ["**/.*/", "**/build", "**/node_modules"]
+  "exclude": ["**/.*/", "**/build", "**/node_modules", "**/base"]
 }

@@ -1,4 +1,4 @@
-# @godis/base
+# dalya
 
 An example component UI library for react
 
@@ -8,10 +8,10 @@ Install the package in your project directory with:
 
 ```sh
 // with npm
-npm install @jnch/dalya
+npm install dalya
 
 // with yarn
-yarn add @jnch/dalya
+yarn add dalya
 ```
 
 ## Documentation

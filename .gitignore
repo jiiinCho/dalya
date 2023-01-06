@@ -6,6 +6,7 @@
 
 # production
 **/build
+**/base
 
 # System Files
 .DS_Store

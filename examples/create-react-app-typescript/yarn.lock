@@ -3486,6 +3486,11 @@ csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.1.tgz#841b532c45c758ee546a11d5bd7b7b473c8c30b9"
   integrity sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==
 
+dalya@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/dalya/-/dalya-1.0.3.tgz#aec060b6b7fd1769a07914e855bb3e3c23fbc5c2"
+  integrity sha512-QXEh/7hutQgCRfxrsHSRvlXSy5anAg3XzZs5VKlT5B0cCPXqK6vnDLwMxu4RdAw0Lx+YROsuft8fhx7sqem4yw==
+
 damerau-levenshtein@^1.0.8:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.8.tgz#b43d286ccbd36bc5b2f7ed41caf2d0aba1f8a6e7"
