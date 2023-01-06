@@ -9,13 +9,12 @@
     "jsx": "react",
     "module": "esnext",
     "declaration": true,
-    "declarationDir": "types",
-    "sourceMap": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "emitDeclarationOnly": true,
     "lib": ["es2020", "dom"],
-    "types": ["node", "react"]
+    "types": ["node", "react"],
+    "isolatedModules": true
   },
   "exclude": ["**/.*/", "**/build", "**/node_modules", "**/base"]
 }

@@ -1,8 +1,9 @@
 {
   "name": "dalya",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "An example component UI library for react",
   "main": "base/index.js",
+  "types": "base/index.d.ts",
   "files": [
     "base"
   ],
@@ -16,9 +17,10 @@
     "url": "https://github.com/jiiinCho/dalya.git",
     "directory": "packages/dalya-base"
   },
-  "types": "base/index.d.ts",
   "scripts": {
-    "build": "rm -rf base && rollup -c scripts/rollup.config.mjs"
+    "build": "rm -rf base && yarn build:base && yarn build:types",
+    "build:base": "yarn babel ./src -d ./base --config-file ../../babel.config.json -x .js,.ts,.tsx",
+    "build:types": "yarn tsc -b tsconfig.build.json"
   },
   "author": "jiiin✨",
   "license": "MIT",
@@ -45,5 +47,8 @@
   },
   "dependencies": {
     "react-is": "^18.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.20.7"
   }
 }
