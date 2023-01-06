@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "rm -rf base && yarn build:base && yarn build:types",
-    "build:base": "yarn babel ./src -d ./base --config-file ../../babel.config.json -x .js,.ts,.tsx",
+    "build:base": "yarn babel ./src -d ./base --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
     "build:types": "yarn tsc -b tsconfig.build.json",
     "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-base"
   },
@@ -48,12 +48,5 @@
   },
   "dependencies": {
     "react-is": "^18.2.0"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.20.7",
-    "@testing-library/react": "^13.4.0",
-    "@types/jest": "^29.2.5",
-    "jest": "^29.3.1",
-    "jest-environment-jsdom": "^29.3.1"
   }
 }
