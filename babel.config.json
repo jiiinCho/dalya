@@ -16,5 +16,6 @@
         "regenerator": true
       }
     ]
-  ]
+  ],
+  "ignore": ["**/*.test.js"]
 }
