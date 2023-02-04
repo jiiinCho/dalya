@@ -1,0 +1,12 @@
+{
+  // This config is for emitting declarations (.d.ts) only
+  // Actual .ts source files are transpiled via babel
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "outDir": "components",
+    "rootDir": "./src",
+    "declarationDir": "components"
+  },
+  "include": ["src/**/*.ts*"],
+  "exclude": ["src/**/*.stories.tsx", "src/**/*.test.(js|ts*)"]
+}

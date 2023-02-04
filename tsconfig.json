@@ -14,7 +14,15 @@
     "emitDeclarationOnly": true,
     "lib": ["es2020", "dom"],
     "types": ["node", "react", "jest"],
-    "isolatedModules": true
+    "isolatedModules": true,
+    "paths": {
+      "dalya": ["packages/dalya-components/src"],
+      "dalya/*": ["packages/dalya-components/src/*"],
+      "dalya-styled-engine": ["packages/dalya-tools/src/styled-engine"],
+      "dalya-system": ["packages/dalya-tools/src/system"],
+      "dalya-types": ["packages/dalya-tools/src/types"],
+      "dalya-utils": ["packages/dalya-utils/src"]
+    }
   },
-  "exclude": ["**/.*/", "**/build", "**/node_modules", "**/base", "examples/"]
+  "exclude": ["**/node_modules", "**/base", "examples/"]
 }

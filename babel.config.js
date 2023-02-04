@@ -1,3 +1,12 @@
+const path = require('path');
+
+const errorCodesPath = path.resolve(
+  __dirname,
+  './packages/dalya-utils/public/static/error-codes.json',
+);
+
+const missingError = process.env.DALYA_EXTRACT_ERROR_CODES === 'true' ? 'write' : 'annotate';
+
 const defaultBabelConfig = {
   presets: [
     '@babel/preset-env',
@@ -10,6 +19,15 @@ const defaultBabelConfig = {
     '@babel/preset-typescript',
   ],
   plugins: [
+    [
+      'babel-plugin-macros',
+      {
+        dalyaError: {
+          errorCodesPath,
+          missingError,
+        },
+      },
+    ],
     [
       '@babel/plugin-transform-runtime',
       {
@@ -24,7 +42,7 @@ module.exports = function (api) {
   if (isProduction) {
     return {
       ...defaultBabelConfig,
-      ignore: ['**/*.test.tsx', '**/*.stories.tsx'],
+      ignore: ['**/*.test.ts', '**/*.test.tsx', '**/*.stories.tsx'],
     };
   }
 

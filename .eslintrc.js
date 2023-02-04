@@ -7,7 +7,7 @@ module.exports = {
     'plugin:jest/recommended',
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:import/recommended',
     'plugin:import/typescript',
     'plugin:jsx-a11y/recommended',
     'plugin:prettier/recommended',
@@ -25,8 +25,6 @@ module.exports = {
     polyfills: ['Promise', 'URL'],
     'import/resolver': {
       typescript: {},
-    },
-    'import/resolver': {
       node: {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
@@ -44,6 +42,41 @@ module.exports = {
       files: ['**/*.test.tsx'],
       rules: {
         '@typescript-eslint/no-unsafe-call': 'off',
+        'max-classes-per-file': 'off',
+      },
+    },
+    {
+      files: ['**/*.macro.test.js'],
+      rules: {
+        'jest/no-standalone-expect': 'off',
+      },
+    },
+    {
+      files: ['./test/*/**'],
+      rules: {
+        'no-prototype-builtins': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
+        'max-classes-per-file': 'off',
+      },
+    },
+    {
+      files: ['*.tsx, *.jsx'],
+      rules: {
+        '@typescript-eslint/ban-types': [
+          'error',
+          {
+            extendDefaults: true,
+            types: {
+              '{}': false,
+            },
+          },
+        ],
+      },
+    },
+    {
+      files: ['**/*.ts'],
+      rules: {
+        'no-use-before-define': 'off',
       },
     },
   ],
@@ -51,7 +84,7 @@ module.exports = {
     curly: ['error', 'all'],
     'no-alert': 1,
     // TODO: remove log in allow
-    'no-console': ['error', { allow: ['warn', 'error'] }],
+    'no-console': ['error', { allow: ['warn', 'error', 'log'] }],
     'func-names': 'error',
     'no-constant-condition': 'error',
     'no-underscore-dangle': 'error',
@@ -90,7 +123,6 @@ module.exports = {
     'react/jsx-no-useless-fragment': ['error', { allowExpressions: true }],
     'no-unused-expressions': 'error',
     'react/no-array-index-key': 'warn',
-    'no-undef': 'error',
     'no-use-before-define': 'error',
     'spaced-comment': ['error', 'always'],
     // TODO: update list
@@ -116,5 +148,12 @@ module.exports = {
     // Missing yarn workspace support
     'import/no-extraneous-dependencies': 'off',
     'jest/expect-expect': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    'no-unused-vars': 'error',
+    'import/order': 'error',
+    'no-param-reassign': 'off', // because tag.__emotion_styles
+    '@typescript-eslint/ban-types': 'off',
+    '@typescript-eslint/no-empty-interface': 'off',
+    'react/static-property-placement': 'off',
   },
 };

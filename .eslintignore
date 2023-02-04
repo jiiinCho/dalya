@@ -12,4 +12,9 @@
 # packages
 
 # production
-/packages/dalya-base/base
+/packages/dalya-components/components
+/packages/dalya-tools/tools
+/packages/dalya-utils/build
+
+# test
+**/*.test.ts

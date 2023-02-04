@@ -1,0 +1,54 @@
+{
+  "name": "dalya-components",
+  "version": "1.0.11",
+  "description": "React UI Component Library refer to mui",
+  "main": "components/index.js",
+  "types": "components/index.d.ts",
+  "files": [
+    "components"
+  ],
+  "keywords": [
+    "react",
+    "react-component",
+    "dalya"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jiiinCho/dalya.git",
+    "directory": "packages/dalya-components"
+  },
+  "scripts": {
+    "build": "rm -rf components && yarn build:components && yarn build:types",
+    "build:components": "yarn babel ./src -d ./components --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
+    "build:types": "yarn tsc -b tsconfig.build.json",
+    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-components --config=jest.config.js",
+    "storybook": "start-storybook -p 6006",
+    "build:storybook": "build-storybook"
+  },
+  "author": "jiiin✨",
+  "license": "MIT",
+  "peerDependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@types/react": "^18.0.26",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    },
+    "@emotion/react": {
+      "optional": true
+    },
+    "@emotion/styled": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "csstype": "^3.1.1"
+  }
+}

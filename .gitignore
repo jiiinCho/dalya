@@ -5,7 +5,9 @@
 /coverage
 
 # production
-**/base
+/packages/dalya-components/components
+/packages/dalya-tools/tools
+/packages/dalya-utils/build
 
 # System Files
 .DS_Store

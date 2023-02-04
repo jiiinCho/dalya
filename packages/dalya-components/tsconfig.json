@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["src/**/*"],
+  // because Custom.test.ts files contain declare module keyword, it interferes default component type definition
+  "exclude": ["src/**/*Custom.test.ts"]
+}

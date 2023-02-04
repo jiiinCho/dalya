@@ -1,11 +1,11 @@
 {
-  "name": "dalya",
+  "name": "dalya-tools",
   "version": "1.0.11",
   "description": "React UI Component Library refer to mui",
-  "main": "base/index.js",
-  "types": "base/index.d.ts",
+  "main": "tools/index.js",
+  "types": "tools/index.d.ts",
   "files": [
-    "base"
+    "tools"
   ],
   "keywords": [
     "react",
@@ -15,13 +15,13 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/jiiinCho/dalya.git",
-    "directory": "packages/dalya-base"
+    "directory": "packages/dalya-tools"
   },
   "scripts": {
-    "build": "rm -rf base && yarn build:base && yarn build:types",
-    "build:base": "yarn babel ./src -d ./base --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
+    "build": "rm -rf tools && yarn build:tools && yarn build:types",
+    "build:tools": "yarn babel ./src -d ./tools --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
     "build:types": "yarn tsc -b tsconfig.build.json",
-    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-base",
+    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-tools --config=jest.config.js",
     "storybook": "start-storybook -p 6006",
     "build:storybook": "build-storybook"
   },
@@ -49,6 +49,6 @@
     "access": "public"
   },
   "dependencies": {
-    "react-is": "^18.2.0"
+    "csstype": "^3.1.1"
   }
 }
