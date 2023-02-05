@@ -12,6 +12,7 @@ describe('styled', () => {
       `You called \`styled("${component}")()\` without a \`style\` argument.`,
       'You must provide a `styles` argument: `styled("div")(styleYouForgetToPass)`.',
     ].join('\n');
+
     expect(logSpy).toHaveBeenCalledWith(noArgumentErrorMessage);
   });
 

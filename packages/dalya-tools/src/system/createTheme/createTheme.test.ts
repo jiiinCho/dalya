@@ -59,6 +59,4 @@ describe('createTheme', () => {
     expect(theme.breakpoints.up('sm')).toBe('@media (min-width:605rem)');
     expect(theme.breakpoints.down('lg')).toBe('@media (max-width:1279.95rem)');
   });
-
-  // TODO: Add styled()
 });

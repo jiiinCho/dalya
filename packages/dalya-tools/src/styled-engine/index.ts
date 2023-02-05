@@ -3,8 +3,6 @@ import { ElementType, ComponentClass, ComponentProps, Ref, JSXElementConstructor
 import { PropsOf } from '@emotion/react';
 import emStyled, { StyledComponent, StyledOptions } from '@emotion/styled';
 
-export { default } from '@emotion/styled';
-
 export interface FilteringStyledOptions<Props, ForwardedProps extends keyof Props = keyof Props> {
   label?: string;
   shouldForwardProp?(propName: PropertyKey): propName is ForwardedProps;
@@ -164,12 +162,16 @@ export interface CreateStyledComponent<
   ): StyledComponent<ComponentProps & AdditionalProps, SpecificComponentProps, JSXProps>;
 }
 
-export function styled(tag: any, options?: any) {
+/**
+ * styled is wrapper function for emStyled to validate tag and args
+ */
+export function styled(tag: any, options?: StyledOptions) {
   const stylesFactory = emStyled(tag, options);
 
   if (process.env.NOD_ENV !== 'production') {
     return (...styles: any[]) => {
       const component = typeof tag === 'string' ? `"${tag}"` : 'component';
+
       if (styles.length === 0) {
         console.error(
           [
@@ -180,6 +182,7 @@ export function styled(tag: any, options?: any) {
       } else if (styles.some((style) => style === undefined)) {
         console.error(`styled(${component})(...args) API requires all its args to be defined.`);
       }
+
       return stylesFactory(...styles);
     };
   }

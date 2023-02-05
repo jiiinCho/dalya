@@ -1,6 +1,7 @@
 import { ElementType } from 'react';
 
-import styledEngineStyled, {
+import {
+  styled as styledEngineStyled,
   CSSInterpolation,
   CreateDalyaStyled as CreateDalyaStyledStyledEngine,
 } from 'dalya-styled-engine';
