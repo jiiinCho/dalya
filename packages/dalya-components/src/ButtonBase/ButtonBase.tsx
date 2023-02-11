@@ -1,5 +1,8 @@
 import React from 'react';
 
+export interface ButtonBaseProps {
+  foo: string;
+}
 const ButtonBase = () => {
   return <button type="button">{'WIP'.toString()}</button>;
 };
