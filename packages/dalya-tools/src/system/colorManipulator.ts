@@ -5,7 +5,7 @@ const SupportedColorFormat = ['rgb', 'rgba', 'hsl', 'hsla', 'color'] as const;
 const SupportedColorSpace = ['srgb', 'display-p3', 'a98-rgb', 'prophoto-rgb', 'rec-2020'] as const;
 type ColorFormat = typeof SupportedColorFormat[number];
 type ColorSpace = typeof SupportedColorSpace[number];
-interface ColorObject {
+export interface ColorObject {
   type: ColorFormat;
   values: [number, number, number] | [number, number, number, number];
   colorSpace?: ColorSpace;
@@ -47,7 +47,7 @@ function unifyToSixDigits(hexValue: string): string[] | null {
  * @param hexValues - `['RR', 'GG', 'BB']` or `['RR', 'GG', 'BB', 'AA']`
  * @returns - `(RR, GG, BB, AA)`
  */
-function convertHexToRgb(hexValues: string[]): string {
+function privateConvertHexToRgb(hexValues: string[]): string {
   // alpha should be convert from hexadecimal to percentage
   const alpha = hexValues
     .splice(3)
@@ -71,11 +71,22 @@ function hexToRgb(color: string): string {
     if (process.env.NODE_ENV !== 'production') {
       throw new DalyaError(`Dalya: Unsuppported hex input.`, color);
     }
-    return ''; // won't display correct color
+    return color;
   }
 
-  const rgbValue = convertHexToRgb(unifiedHexValuesInArray);
+  const rgbValue = privateConvertHexToRgb(unifiedHexValuesInArray);
   return `${rgbForamt}${rgbValue}`;
+}
+
+export function safeHexToRgb(color: string, warning?: string): string {
+  try {
+    return hexToRgb(color);
+  } catch (error) {
+    if (warning && process.env.NODE_ENV !== 'production') {
+      console.warn(warning);
+    }
+    return color;
+  }
 }
 
 function isColorObject(color: any): color is ColorObject {
@@ -211,7 +222,7 @@ export function recomposeColor(color: ColorObject): string {
     case 'hsla':
       return `${type}(${values.map((n, i) => (i > 0 && i < 3 ? `${n}%` : n)).join(', ')})`;
     case 'color':
-      return `${colorSpace} ${values.join(' ')}`;
+      return `${type}(${colorSpace} ${values.join(' ')})`;
     default:
       throw new DalyaError('Dalya: Unsupported type `%s`. Could not recomposed color', type);
   }
