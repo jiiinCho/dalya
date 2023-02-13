@@ -9,4 +9,19 @@ function capitalize(string: string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export default capitalize;
+function safeCapitalize(string: any, warning?: string) {
+  try {
+    return capitalize(string);
+  } catch (error: any) {
+    if (process.env.NODE_ENV !== 'production') {
+      if (warning) {
+        console.warn(warning);
+      }
+      console.error(error?.stack || error);
+    }
+  }
+
+  return string;
+}
+
+export default safeCapitalize;

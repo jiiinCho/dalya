@@ -42,6 +42,13 @@ function unifyToSixDigits(hexValue: string): string[] | null {
   return pairedColorValues;
 }
 
+function privateSafeOnError(error: any, warning?: string) {
+  if (warning) {
+    console.warn(warning);
+  }
+  console.error(error?.stack || error);
+}
+
 /**
  * Convert hexadecimal to decimal
  * @param hexValues - `['RR', 'GG', 'BB']` or `['RR', 'GG', 'BB', 'AA']`
@@ -50,7 +57,7 @@ function unifyToSixDigits(hexValue: string): string[] | null {
 function privateConvertHexToRgb(hexValues: string[]): string {
   // alpha should be convert from hexadecimal to percentage
   const alpha = hexValues
-    .splice(3)
+    .splice(3, 4)
     .map((alphaValue) => Math.round((parseInt(alphaValue, 16) / 255) * 1000) / 1000); // mutate param
   const hexToDecimal = hexValues.map((hex) => parseInt(hex, 16));
 
@@ -64,7 +71,7 @@ function privateConvertHexToRgb(hexValues: string[]): string {
  */
 function hexToRgb(color: string): string {
   if (!color.startsWith('#')) {
-    throw new DalyaError('Dalya: Unsupported hex color');
+    throw new DalyaError('Dalya: Unsupported hex color. Should start with `#` hash symbol');
   }
   const colorValuesRaw = color.slice(1); // colorValues = 0080C0
   const rgbForamt = `rgb${colorValuesRaw.length > 6 ? 'a' : ''}`; // rgb or rgba
@@ -72,24 +79,23 @@ function hexToRgb(color: string): string {
 
   if (!unifiedHexValuesInArray) {
     if (process.env.NODE_ENV !== 'production') {
-      throw new DalyaError('Dalya: Unsuppported hex input.');
+      throw new DalyaError(
+        'Dalya: Unsuppported hex input./nIt should be either three or six digits',
+      );
     }
     return color;
   }
 
   const rgbValue = privateConvertHexToRgb(unifiedHexValuesInArray);
-  return `${rgbForamt}${rgbValue}`;
+  return `${rgbForamt}(${rgbValue})`;
 }
 
 export function safeHexToRgb(color: string, warning?: string): string {
   try {
     return hexToRgb(color);
-  } catch (error) {
+  } catch (error: any) {
     if (process.env.NODE_ENV !== 'production') {
-      if (warning) {
-        console.warn(warning);
-      }
-      console.error(error);
+      privateSafeOnError(error, warning);
     }
     return color;
   }
@@ -334,13 +340,6 @@ function darken(color: string, coefficient: number): string {
   return recomposeColor({ type, values: colorValues, colorSpace });
 }
 
-function safeOnError(error: unknown, warning?: string) {
-  if (warning) {
-    console.warn(warning);
-  }
-  console.error(error);
-}
-
 // Error handler for darken function, thrown exceptions from decomposeColor would be caught here
 // usage example: safeDarken(palette.error.light, 0.6)
 export function safeDarken(color: string, coefficient: number, warning: string) {
@@ -348,7 +347,7 @@ export function safeDarken(color: string, coefficient: number, warning: string) 
     return darken(color, coefficient);
   } catch (error) {
     if (process.env.NODE_ENV !== 'productions') {
-      safeOnError(error, warning);
+      privateSafeOnError(error, warning);
     }
     return color;
   }
@@ -400,7 +399,7 @@ export function safeLighten(color: string, coefficient: number, warning: string)
     return lighten(color, coefficient);
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
-      safeOnError(error, warning);
+      privateSafeOnError(error, warning);
     }
     return color;
   }

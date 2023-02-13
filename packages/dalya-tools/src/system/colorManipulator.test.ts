@@ -49,24 +49,31 @@ describe('colorManipulator', () => {
     });
   });
 
-  /*
   describe('hexToRgb', () => {
+    it('throws an exception for unsupported type argument', () => {
+      const errorSpy = jest.spyOn(console, 'error');
+      hexToRgb('abc');
+
+      expect(errorSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('converts three digits hex color to rgb color', () => {
-      expect(hexToRgb('abc')).toBe('rgb(153, 255, 51');
+      expect(hexToRgb('#9f3')).toBe('rgb(153, 255, 51)');
     });
 
     it('converts six digits hex color to rgb color', () => {
-      expect(hexToRgb('#a94fd3')).toBe('rgb(169, 79, 211');
+      expect(hexToRgb('#a94fd3')).toBe('rgb(169, 79, 211)');
     });
 
     it('converts six digits alpha hex color to rgba color', () => {
-      expect(hexToRgb('#a94fd3')).toBe('rgb(169, 79, 211');
+      expect(hexToRgb('#111111f8')).toBe('rgba(17, 17, 17, 0.973)');
     });
   });
 
+  /*
+  
 
-
-    describe('rgbToHex', () => {
+  describe('rgbToHex', () => {
     it('converts an rgb color to a hex color` ', () => {
       expect(rgbToHex('rgb(169, 79, 211)')).to.equal('#a94fd3');
     });
@@ -79,6 +86,7 @@ describe('colorManipulator', () => {
       expect(rgbToHex('#A94FD3')).to.equal('#A94FD3');
     });
   });
+   
 
   describe('hslToRgb', () => {
     it('converts an hsl color to an rgb color` ', () => {
