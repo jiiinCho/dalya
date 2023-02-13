@@ -18,8 +18,8 @@
     "directory": "packages/dalya-components"
   },
   "scripts": {
-    "build": "rm -rf components && yarn build:components && yarn build:types",
-    "build:components": "yarn babel ./src -d ./components --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
+    "build": "rm -rf build && yarn build:components && yarn build:types",
+    "build:components": "yarn babel ./src -d ./build --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
     "build:types": "yarn tsc -b tsconfig.build.json",
     "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-components --config=jest.config.js",
     "storybook": "start-storybook -p 6006",

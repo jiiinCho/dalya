@@ -3,7 +3,7 @@ import {
   Theme as SystemTheme,
   ThemeOptions as SystemThemeOptions,
 } from 'dalya-system';
-import DalyaError from 'dalya-utils/macros/DalyaError.macro';
+import { DalyaError } from 'dalya-utils';
 
 import { Mixins, MixinsOptions } from './createMixins';
 import { Palette, PaletteOptions, createPalette } from './createPalette';

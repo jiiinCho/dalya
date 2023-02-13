@@ -6,8 +6,8 @@
 
 # production
 /packages/dalya-components/components
-/packages/dalya-tools/tools
-/packages/dalya-utils/build
+/packages/**/build
+
 
 # System Files
 .DS_Store
@@ -30,3 +30,6 @@ yarn-error.log*
 
 # IDE - VSCode
 .vscode/*
+
+# tsconfig
+/packages/**/*.build.tsbuildinfo

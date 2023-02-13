@@ -3,10 +3,15 @@
   // Actual .ts source files are transpiled via babel
   "extends": "./tsconfig",
   "compilerOptions": {
+    "composite": true,
     "outDir": "components",
     "rootDir": "./src",
     "declarationDir": "components"
   },
   "include": ["src/**/*.ts*"],
-  "exclude": ["src/**/*.stories.tsx", "src/**/*.test.(js|ts*)"]
+  "exclude": ["src/**/*.stories.tsx", "src/**/*.test.(js|ts*)"],
+  "references": [
+    { "path": "../dalya-utils/tsconfig.build.json" },
+    { "path": "../dalya-tools/tsconfig.build.json" }
+  ]
 }

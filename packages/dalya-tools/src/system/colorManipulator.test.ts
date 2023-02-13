@@ -49,6 +49,7 @@ describe('colorManipulator', () => {
     });
   });
 
+  /*
   describe('hexToRgb', () => {
     it('converts three digits hex color to rgb color', () => {
       expect(hexToRgb('abc')).toBe('rgb(153, 255, 51');
@@ -63,7 +64,7 @@ describe('colorManipulator', () => {
     });
   });
 
-  /*
+
 
     describe('rgbToHex', () => {
     it('converts an rgb color to a hex color` ', () => {

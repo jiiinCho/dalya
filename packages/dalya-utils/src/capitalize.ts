@@ -1,4 +1,4 @@
-import DalyaError from '../macros/DalyaError.macro';
+import DalyaError from './DalyaError';
 
 // This function is not equivalent to `text-transform: capitalize`
 function capitalize(string: string): string {

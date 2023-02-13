@@ -46,6 +46,7 @@ function getDisplayName(Component: ElementType): string | undefined {
 }
 
 export default getDisplayName;
+
 /*
 <marquee bgcolor="#ffa7c4">hi</marquee>
 => 

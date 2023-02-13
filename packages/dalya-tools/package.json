@@ -18,12 +18,10 @@
     "directory": "packages/dalya-tools"
   },
   "scripts": {
-    "build": "rm -rf tools && yarn build:tools && yarn build:types",
-    "build:tools": "yarn babel ./src -d ./tools --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
+    "build": "rm -rf build && yarn build:tools && yarn build:types",
+    "build:tools": "yarn babel ./src -d ./build --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
     "build:types": "yarn tsc -b tsconfig.build.json",
-    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-tools --config=jest.config.js",
-    "storybook": "start-storybook -p 6006",
-    "build:storybook": "build-storybook"
+    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-tools --config=jest.config.js"
   },
   "author": "jiiin✨",
   "license": "MIT",

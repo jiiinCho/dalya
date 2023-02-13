@@ -1,4 +1,4 @@
-import DalyaError from 'dalya-utils/macros/DalyaError.macro';
+import { DalyaError } from 'dalya-utils';
 
 // After making the namesArr array into readonly mode, you cannot use the usual push, pop, slice, etc.
 const SupportedColorFormat = ['rgb', 'rgba', 'hsl', 'hsla', 'color'] as const;
@@ -63,13 +63,16 @@ function privateConvertHexToRgb(hexValues: string[]): string {
  * @returns {string} A CSS rgb color string
  */
 function hexToRgb(color: string): string {
+  if (!color.startsWith('#')) {
+    throw new DalyaError('Dalya: Unsupported hex color');
+  }
   const colorValuesRaw = color.slice(1); // colorValues = 0080C0
   const rgbForamt = `rgb${colorValuesRaw.length > 6 ? 'a' : ''}`; // rgb or rgba
   const unifiedHexValuesInArray = unifyToSixDigits(colorValuesRaw);
 
   if (!unifiedHexValuesInArray) {
     if (process.env.NODE_ENV !== 'production') {
-      throw new DalyaError(`Dalya: Unsuppported hex input.`, color);
+      throw new DalyaError('Dalya: Unsuppported hex input.');
     }
     return color;
   }
@@ -82,8 +85,11 @@ export function safeHexToRgb(color: string, warning?: string): string {
   try {
     return hexToRgb(color);
   } catch (error) {
-    if (warning && process.env.NODE_ENV !== 'production') {
-      console.warn(warning);
+    if (process.env.NODE_ENV !== 'production') {
+      if (warning) {
+        console.warn(warning);
+      }
+      console.error(error);
     }
     return color;
   }
@@ -109,10 +115,9 @@ function colorObjectGenerator(color: ColorObjectGeneratorPrarams): {
     getColorObject(): ColorObject {
       if (this.color.values.includes(NaN)) {
         const NaNIndex = this.color.values.indexOf(NaN);
+
         throw new DalyaError(
-          'Dalya: Unsupported color values. Given color type `%s` includes value `%s`. This should be number type',
-          this.color.type,
-          this.color.values[NaNIndex],
+          `Dalya: Unsupported color values. Given color type ${this.color.type} includes value ${this.color.values[NaNIndex]}. This should be number type`,
         );
       }
 
@@ -154,9 +159,8 @@ function decomposeColor(color: string | ColorObject): ColorObject {
   const isCSSColor = color.match(/(.*(?=))\((.*)\)/);
   if (!isCSSColor) {
     throw new DalyaError(
-      'Dalya: Unsupported `$s` color.\n' +
-        'The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().',
-      color,
+      `Dalya: Unsupported ${color} color.
+        'The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().`,
     );
   }
 
@@ -165,9 +169,8 @@ function decomposeColor(color: string | ColorObject): ColorObject {
 
   if (!isValidColorFormat(colorFormat)) {
     throw new DalyaError(
-      'Dalya: Unsupported `$s` color.\n' +
-        'The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().',
-      color,
+      `Dalya: Unsupported ${color} color
+        'The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().`,
     );
   }
 
@@ -177,9 +180,7 @@ function decomposeColor(color: string | ColorObject): ColorObject {
     const colorSpace = cssColorValuesInString.splice(0, 1).toString(); // display-p3
     if (!isValidColorSpace(colorSpace)) {
       throw new DalyaError(
-        'Dalya: Does not support rgb% values.' +
-          'The following spaces are supported: srgb, display-p3, a98-rgb, prophoto-rgb, rec-2020',
-        colorSpace,
+        'Dalya: Does not support rgb% values. The following spaces are supported: srgb, display-p3, a98-rgb, prophoto-rgb, rec-2020',
       );
     }
 
@@ -224,7 +225,7 @@ export function recomposeColor(color: ColorObject): string {
     case 'color':
       return `${type}(${colorSpace} ${values.join(' ')})`;
     default:
-      throw new DalyaError('Dalya: Unsupported type `%s`. Could not recomposed color', type);
+      throw new DalyaError(`Dalya: Unsupported type ${type}. Could not recomposed color`);
   }
 }
 
@@ -333,16 +334,21 @@ function darken(color: string, coefficient: number): string {
   return recomposeColor({ type, values: colorValues, colorSpace });
 }
 
+function safeOnError(error: unknown, warning?: string) {
+  if (warning) {
+    console.warn(warning);
+  }
+  console.error(error);
+}
+
 // Error handler for darken function, thrown exceptions from decomposeColor would be caught here
 // usage example: safeDarken(palette.error.light, 0.6)
 export function safeDarken(color: string, coefficient: number, warning: string) {
   try {
     return darken(color, coefficient);
   } catch (error) {
-    if (warning && process.env.NODE_ENV !== 'productions') {
-      console.warn(warning);
-      // TODO: why not this one?
-      // console.warn(error);
+    if (process.env.NODE_ENV !== 'productions') {
+      safeOnError(error, warning);
     }
     return color;
   }
@@ -376,7 +382,7 @@ function lighten(color: string, coefficient: number): string {
       }) as typeof values;
       break;
     default:
-      throw new DalyaError('Dalya: Unsupported color type `%s`', type);
+      throw new DalyaError(`Dalya: Unsupported color type ${type}`);
   }
 
   return recomposeColor({ type, values: colorValues, colorSpace });
@@ -393,9 +399,8 @@ export function safeLighten(color: string, coefficient: number, warning: string)
   try {
     return lighten(color, coefficient);
   } catch (error) {
-    if (warning && process.env.NODE_ENV !== 'production') {
-      console.warn(warning);
-      console.warn(error); // why not?
+    if (process.env.NODE_ENV !== 'production') {
+      safeOnError(error, warning);
     }
     return color;
   }
