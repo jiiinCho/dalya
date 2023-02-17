@@ -30,6 +30,6 @@ module.exports = function (api) {
 
   return {
     ...defaultBabelConfig,
-    ignore: ['**/*.test.ts', '**/*.test.tsx', '**/*.stories.tsx'],
+    ignore: ['**/*.test.ts', '**/*.test.js', '**/*.test.tsx', '**/*.d.ts'],
   };
 };

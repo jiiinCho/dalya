@@ -1,62 +1,62 @@
-import { recomposeColor, ColorObject, hexToRgb } from 'dalya-system';
+import { recomposeColor, hexToRgb } from './colorConverter';
 
 describe('colorManipulator', () => {
   describe('recomposeColor', () => {
     it('converts a decomposed rgb color object to a string', () => {
-      const mockColor: ColorObject = {
+      const mockColor = {
         type: 'rgb',
         values: [255, 255, 255],
       };
-
       expect(recomposeColor(mockColor)).toBe('rgb(255, 255, 255)');
     });
 
     it('converts a decomposed rgba color object to a string', () => {
-      const mock: ColorObject = {
+      const mock = {
         type: 'rgba',
         values: [255, 255, 255, 0.5],
       };
-
       expect(recomposeColor(mock)).toBe('rgba(255, 255, 255, 0.5)');
     });
 
     it('converts a decomposed CSS4 color object to a string', () => {
-      const mock: ColorObject = {
+      const mock = {
         type: 'color',
         colorSpace: 'display-p3',
         values: [0.5, 0.3, 0.2],
       };
-
       expect(recomposeColor(mock)).toBe('color(display-p3 0.5 0.3 0.2)');
     });
 
     it('converts a decomposed hsl color object to a string', () => {
-      const mock: ColorObject = {
+      const mock = {
         type: 'hsl',
         values: [100, 50, 25],
       };
-
       expect(recomposeColor(mock)).toBe('hsl(100, 50%, 25%)');
     });
 
     it('converts a decomposed hsla color object to a string', () => {
-      const mock: ColorObject = {
+      const mock = {
         type: 'hsla',
         values: [100, 50, 25, 0.5],
       };
-
       expect(recomposeColor(mock)).toBe('hsla(100, 50%, 25%, 0.5)');
+    });
+
+    describe('exception', () => {
+      it('throws an exception for unsupported color type', () => {
+        const mock = {
+          type: 'unknown type',
+          values: [100, 50, 25, 0.5],
+        };
+        expect(() => {
+          recomposeColor(mock);
+        }).toThrow('Dalya: Unsupported color type `unknown type`. Could not recomposed color');
+      });
     });
   });
 
   describe('hexToRgb', () => {
-    it('throws an exception for unsupported type argument', () => {
-      const errorSpy = jest.spyOn(console, 'error');
-      hexToRgb('abc');
-
-      expect(errorSpy).toHaveBeenCalledTimes(1);
-    });
-
     it('converts three digits hex color to rgb color', () => {
       expect(hexToRgb('#9f3')).toBe('rgb(153, 255, 51)');
     });
@@ -67,6 +67,24 @@ describe('colorManipulator', () => {
 
     it('converts six digits alpha hex color to rgba color', () => {
       expect(hexToRgb('#111111f8')).toBe('rgba(17, 17, 17, 0.973)');
+    });
+
+    describe('exceptions', () => {
+      it('throws an exception for unsupported type argument', () => {
+        expect(() => {
+          hexToRgb('abc');
+        }).toThrow(
+          'Dalya: Unsupported hex format. Should start with `#`(hash symbol) but got `abc`',
+        );
+      });
+
+      it('throws an exception for unsupported hex format', () => {
+        expect(() => {
+          hexToRgb('#rrggbbaa1122');
+        }).toThrow(
+          'Dalya: Unsuppported hex input./nIt should be either three, six digits or eight digits but got `#rrggbbaa1122`',
+        );
+      });
     });
   });
 

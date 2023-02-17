@@ -16,13 +16,13 @@
     "types": ["node", "react", "jest"],
     "isolatedModules": true,
     "paths": {
-      "dalya": ["packages/dalya-components/src"],
-      "dalya/*": ["packages/dalya-components/src/*"],
-      "dalya-styled-engine": ["packages/dalya-tools/src/styled-engine"],
-      "dalya-system": ["packages/dalya-tools/src/system"],
-      "dalya-types": ["packages/dalya-tools/src/types"],
-      "dalya-utils": ["packages/dalya-utils/src"]
+      "dalya": ["./packages/dalya-components/src"],
+      "dalya/*": ["./packages/dalya-components/src/*"],
+      "dalya-styled-engine": ["./packages/dalya-tools/src/styled-engine"],
+      "dalya-system": ["./packages/dalya-tools/src/system"],
+      "dalya-types": ["./packages/dalya-tools/src/types"],
+      "dalya-utils": ["./packages/dalya-utils/src"]
     }
   },
-  "exclude": ["**/node_modules", "**/base", "examples/"]
+  "exclude": ["**/.*/", "**/build", "**/node_modules", "examples/"]
 }

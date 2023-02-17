@@ -21,7 +21,8 @@
     "build": "rm -rf build && yarn build:tools && yarn build:types",
     "build:tools": "yarn babel ./src -d ./build --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
     "build:types": "yarn tsc -b tsconfig.build.json",
-    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-tools --config=jest.config.js"
+    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-tools --config=jest.config.js",
+    "error:write": "cd ../../ && yarn test"
   },
   "author": "jiiin✨",
   "license": "MIT",
@@ -47,6 +48,7 @@
     "access": "public"
   },
   "dependencies": {
-    "csstype": "^3.1.1"
+    "csstype": "^3.1.1",
+    "dalya-utils": "*"
   }
 }

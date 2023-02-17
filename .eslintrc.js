@@ -83,8 +83,8 @@ module.exports = {
   rules: {
     curly: ['error', 'all'],
     'no-alert': 1,
-    // TODO: remove log in allow
-    'no-console': ['error', { allow: ['warn', 'error', 'log'] }],
+    // TODO: remove `log` before publish
+    'no-console': ['error', { allow: ['warn', 'error', 'info', 'log'] }],
     'func-names': 'error',
     'no-constant-condition': 'error',
     'no-underscore-dangle': 'error',

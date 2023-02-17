@@ -6,7 +6,7 @@
     "lint": "yarn eslint && yarn prettier",
     "eslint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0",
     "prettier": "prettier '**/*.{js,tsx,ts,json,md}' --check --ignore-path .eslintignore",
-    "test": "yarn jest --config=jest.config.js --testPathPattern=packages/"
+    "test": "cross-env DALYA_EXTRACT_ERROR_CODES=true yarn jest --config=jest.config.js --testPathPattern=packages/"
   },
   "author": "jiiin✨",
   "devDependencies": {
@@ -36,6 +36,7 @@
     "@typescript-eslint/eslint-plugin": "^5.48.0",
     "@typescript-eslint/parser": "^5.48.0",
     "babel-loader": "^8.3.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.31.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.0.0",

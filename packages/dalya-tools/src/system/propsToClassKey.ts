@@ -4,7 +4,6 @@ function isEmpty(string: string): boolean {
   return string.length === 0;
 }
 
-// ADDED
 function removeWhiteSpaces(string: string): string {
   return string.replace(/\s/g, '');
 }

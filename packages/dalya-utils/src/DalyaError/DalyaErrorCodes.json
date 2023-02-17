@@ -1,4 +1,6 @@
 {
-  "1": "Dalya: `capitalize(string)` expects a string argument.",
-  "2": "Dalya: Unsupported hex color. Should start with `#` hash symbol"
+  "1": "Dalya: `capitalize(string)` expects a string argument but got `capitalize(%s)`",
+  "2": "Dalya: Unsupported color type `%s`. Could not recomposed color",
+  "3": "Dalya: Unsupported hex format. Should start with `#`(hash symbol) but got `%s`",
+  "4": "Dalya: Unsuppported hex input./nIt should be either three, six digits or eight digits but got `%s`"
 }

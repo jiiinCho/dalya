@@ -23,9 +23,10 @@
   },
   "scripts": {
     "build": "rm -rf build && yarn build:utils && yarn build:types",
-    "build:utils": "yarn babel ./src -d ./build --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production",
+    "build:utils": "yarn babel ./src -d ./build --config-file ../../babel.config.js -x .js,.ts,.tsx --env-name=production && cp src/DalyaError/DalyaErrorCodes.json build/DalyaError/DalyaErrorCodes.json",
     "build:types": "yarn tsc -b tsconfig.build.json",
-    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-utils --config=jest.config.js"
+    "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-utils --config=jest.config.js",
+    "error:write": "cd ../../ && yarn test"
   },
   "peerDependencies": {
     "react": "^18.2.0"

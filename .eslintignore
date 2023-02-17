@@ -1,15 +1,14 @@
-# 
-/.git
-/.yarn
-
 # examples
 /examples
 
 # configuration files
 .**
 *.config.js
+/.git
+/.yarn
 
 # packages
+**/*node_modules
 
 # production
 /packages/dalya-components/components
@@ -18,3 +17,6 @@
 
 # test
 **/*.test.ts
+
+# build
+**/*build

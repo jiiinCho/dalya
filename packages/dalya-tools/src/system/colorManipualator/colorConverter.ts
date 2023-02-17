@@ -1,77 +1,31 @@
 import { DalyaError } from 'dalya-utils';
 
-// After making the namesArr array into readonly mode, you cannot use the usual push, pop, slice, etc.
-const SupportedColorFormat = ['rgb', 'rgba', 'hsl', 'hsla', 'color'] as const;
-const SupportedColorSpace = ['srgb', 'display-p3', 'a98-rgb', 'prophoto-rgb', 'rec-2020'] as const;
-type ColorFormat = typeof SupportedColorFormat[number];
-type ColorSpace = typeof SupportedColorSpace[number];
-export interface ColorObject {
-  type: ColorFormat;
-  values: [number, number, number] | [number, number, number, number];
-  colorSpace?: ColorSpace;
-}
-
-function isValidColorFormat(format: any): format is ColorFormat {
-  return SupportedColorFormat.includes(format);
-}
-
-function isValidColorSpace(colorSpace: any): colorSpace is ColorFormat {
-  return SupportedColorSpace.includes(colorSpace);
-}
-
-/**
- * Unify format to six hex digits
- * @param hexValue - #RGB or #RRGGBB, #RRGGBBAA
- * @returns - ['RR', 'GG', 'BB'], ['RR', 'GG', 'BB', 'AA'] or null in wrong format
- */
-function unifyToSixDigits(hexValue: string): string[] | null {
-  // /.{1,2}/g => group string by spliting 2 units
-  // i.e. 'hello'.match(/.{1, 2}/g) => ['he', 'll', 'o']
-  const regExForStringPairs = new RegExp(`.{1,${hexValue.length >= 6 ? 2 : 1}}`, 'g');
-  const pairedColorValues = hexValue.match(regExForStringPairs);
-
-  if (!pairedColorValues) {
-    return null;
-  }
-
-  // case: #000
-  if (pairedColorValues[0].length === 1) {
-    return pairedColorValues.map((n) => n + n);
-  }
-
-  return pairedColorValues;
-}
-
-function privateSafeOnError(error: any, warning?: string) {
-  if (warning) {
-    console.warn(warning);
-  }
-  console.error(error?.stack || error);
-}
-
-/**
- * Convert hexadecimal to decimal
- * @param hexValues - `['RR', 'GG', 'BB']` or `['RR', 'GG', 'BB', 'AA']`
- * @returns - `(RR, GG, BB, AA)`
- */
-function privateConvertHexToRgb(hexValues: string[]): string {
-  // alpha should be convert from hexadecimal to percentage
-  const alpha = hexValues
-    .splice(3, 4)
-    .map((alphaValue) => Math.round((parseInt(alphaValue, 16) / 255) * 1000) / 1000); // mutate param
-  const hexToDecimal = hexValues.map((hex) => parseInt(hex, 16));
-
-  return [...hexToDecimal, ...alpha].join(', ');
-}
+import {
+  clamp,
+  unifyToSixDigits,
+  colorObjectGenerator,
+  privateConvertHexToRgb,
+} from './colorUtils';
+import {
+  ColorObject,
+  ColorFormat,
+  ColorSpace,
+  isColorObject,
+  isValidColorFormat,
+  isValidColorSpace,
+} from './colorTypes';
 
 /**
  * Converts a color from CSS hex format to CSS rgb format, i.e. #0080C0 to (0, 128, 192)
  * @param {string} color - Hex color, i.e. #RGB or #RRGGBB, #RRGGBBAA
  * @returns {string} A CSS rgb color string
  */
-function hexToRgb(color: string): string {
+export function hexToRgb(color: string): string {
   if (!color.startsWith('#')) {
-    throw new DalyaError('Dalya: Unsupported hex color. Should start with `#` hash symbol');
+    throw new DalyaError(
+      'Dalya: Unsupported hex format. Should start with `#`(hash symbol) but got `%s`',
+      color,
+    );
   }
   const colorValuesRaw = color.slice(1); // colorValues = 0080C0
   const rgbForamt = `rgb${colorValuesRaw.length > 6 ? 'a' : ''}`; // rgb or rgba
@@ -80,7 +34,8 @@ function hexToRgb(color: string): string {
   if (!unifiedHexValuesInArray) {
     if (process.env.NODE_ENV !== 'production') {
       throw new DalyaError(
-        'Dalya: Unsuppported hex input./nIt should be either three or six digits',
+        'Dalya: Unsuppported hex input./nIt should be either three, six digits or eight digits but got `%s`',
+        color,
       );
     }
     return color;
@@ -90,59 +45,27 @@ function hexToRgb(color: string): string {
   return `${rgbForamt}(${rgbValue})`;
 }
 
-export function safeHexToRgb(color: string, warning?: string): string {
-  try {
-    return hexToRgb(color);
-  } catch (error: any) {
-    if (process.env.NODE_ENV !== 'production') {
-      privateSafeOnError(error, warning);
-    }
-    return color;
+/**
+ * Converts a color object with type and values to a string
+ * @param {ColorObject} color - Decomposed color
+ * @returns {string} - CSS color string
+ */
+export function recomposeColor(color: ColorObject): string {
+  const { type, values, colorSpace } = color;
+
+  switch (type) {
+    case 'rgb':
+    case 'rgba':
+      return `${type}(${values.map((n, i) => (i < 3 ? Math.round(n) : n)).join(', ')})`;
+      break;
+    case 'hsl':
+    case 'hsla':
+      return `${type}(${values.map((n, i) => (i > 0 && i < 3 ? `${n}%` : n)).join(', ')})`;
+    case 'color':
+      return `${type}(${colorSpace} ${values.join(' ')})`;
+    default:
+      throw new DalyaError('Dalya: Unsupported color type `%s`. Could not recomposed color', type);
   }
-}
-
-function isColorObject(color: any): color is ColorObject {
-  return color.type && color.values;
-}
-
-type ColorObjectGeneratorPrarams = {
-  type: ColorFormat;
-  values: number[];
-  colorSpace?: ColorSpace;
-};
-
-// utility function for decomposeColor()
-function colorObjectGenerator(color: ColorObjectGeneratorPrarams): {
-  color: ColorObjectGeneratorPrarams;
-  getColorObject: () => ColorObject;
-} {
-  return {
-    color,
-    getColorObject(): ColorObject {
-      if (this.color.values.includes(NaN)) {
-        const NaNIndex = this.color.values.indexOf(NaN);
-
-        throw new DalyaError(
-          `Dalya: Unsupported color values. Given color type ${this.color.type} includes value ${this.color.values[NaNIndex]}. This should be number type`,
-        );
-      }
-
-      const formattedValues: ColorObject['values'] = [
-        this.color.values[0],
-        this.color.values[1],
-        this.color.values[2],
-      ];
-
-      if (this.color.values[3]) {
-        formattedValues.push(this.color.values[3]);
-      }
-      return {
-        type: this.color.type,
-        values: formattedValues,
-        ...(this.color.colorSpace && { colorSpace: this.color.colorSpace }),
-      };
-    },
-  };
 }
 
 /**
@@ -213,29 +136,6 @@ function decomposeColor(color: string | ColorObject): ColorObject {
 }
 
 /**
- * Converts a color object with type and values to a string
- * @param {ColorObject} color - Decomposed color
- * @returns {string} - CSS color string
- */
-export function recomposeColor(color: ColorObject): string {
-  const { type, values, colorSpace } = color;
-
-  switch (type) {
-    case 'rgb':
-    case 'rgba':
-      return `${type}(${values.map((n, i) => (i < 3 ? Math.round(n) : n)).join(', ')})`;
-      break;
-    case 'hsl':
-    case 'hsla':
-      return `${type}(${values.map((n, i) => (i > 0 && i < 3 ? `${n}%` : n)).join(', ')})`;
-    case 'color':
-      return `${type}(${colorSpace} ${values.join(' ')})`;
-    default:
-      throw new DalyaError(`Dalya: Unsupported type ${type}. Could not recomposed color`);
-  }
-}
-
-/**
  * Converts a color from hsl format to rgb format
  * @param {string} color - HSL color values
  * @returns {string} rgb color values
@@ -303,23 +203,7 @@ export function getContrastRatio(foreground: string, background: string) {
   return (Math.max(lumA, lumB) + 0.05) / (Math.min(lumA, lumB) + 0.05);
 }
 
-/**
- * To limit value doesn't go below a minimum or above a maximum
- * @param {number} value - value to be clamped
- * @param {number} min  - lower boundary of the output range
- * @param {number} max - upper boundary of the output range
- * @returns {number} A number in the range [min, max]
- */
-function clamp(value: number, min = 0, max = 1): number {
-  if (process.env.NODE_ENV !== 'production') {
-    if (value < min || value > max) {
-      console.error(`Dalya: The value provided ${value} is out of range [${min}, ${max}].`);
-    }
-  }
-  return Math.min(Math.max(min, value), max);
-}
-
-function darken(color: string, coefficient: number): string {
+export function darken(color: string, coefficient: number): string {
   const { type, values, colorSpace } = decomposeColor(color);
   const factor = clamp(coefficient);
 
@@ -340,20 +224,7 @@ function darken(color: string, coefficient: number): string {
   return recomposeColor({ type, values: colorValues, colorSpace });
 }
 
-// Error handler for darken function, thrown exceptions from decomposeColor would be caught here
-// usage example: safeDarken(palette.error.light, 0.6)
-export function safeDarken(color: string, coefficient: number, warning: string) {
-  try {
-    return darken(color, coefficient);
-  } catch (error) {
-    if (process.env.NODE_ENV !== 'productions') {
-      privateSafeOnError(error, warning);
-    }
-    return color;
-  }
-}
-
-function lighten(color: string, coefficient: number): string {
+export function lighten(color: string, coefficient: number): string {
   const { type, values, colorSpace } = decomposeColor(color);
   const factor = clamp(coefficient);
 
@@ -385,22 +256,4 @@ function lighten(color: string, coefficient: number): string {
   }
 
   return recomposeColor({ type, values: colorValues, colorSpace });
-}
-
-/**
- * Lighten a color
- * @param {string} color - CSS color, CSS color, i.e. #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color()
- * @param {number} coefficient - multiplier in the range 0 - 1
- * @param {string} warning - (optional) custom console error message for development environemnt
- * @returns {string} A CSS color string. Hex input values are returned as rgb
- */
-export function safeLighten(color: string, coefficient: number, warning: string): string {
-  try {
-    return lighten(color, coefficient);
-  } catch (error) {
-    if (process.env.NODE_ENV !== 'production') {
-      privateSafeOnError(error, warning);
-    }
-    return color;
-  }
 }
