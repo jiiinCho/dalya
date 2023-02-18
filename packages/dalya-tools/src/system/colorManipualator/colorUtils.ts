@@ -1,4 +1,4 @@
-import { DalyaError } from 'dalya-utils/build';
+import { DalyaError } from 'dalya-utils';
 
 import { ColorObject, ColorFormat, ColorSpace } from './colorTypes';
 
@@ -12,7 +12,12 @@ import { ColorObject, ColorFormat, ColorSpace } from './colorTypes';
 export function clamp(value: number, min = 0, max = 1): number {
   if (process.env.NODE_ENV !== 'production') {
     if (value < min || value > max) {
-      console.error(`Dalya: The value provided ${value} is out of range [${min}, ${max}].`);
+      throw new DalyaError(
+        'Dalya: The value provided `%s` is out of range [`%s`, `%s`].',
+        String(value),
+        String(min),
+        String(max),
+      );
     }
   }
   return Math.min(Math.max(min, value), max);
@@ -61,12 +66,9 @@ export function colorObjectGenerator(color: ColorObjectGeneratorPrarams): {
     color,
     getColorObject(): ColorObject {
       if (this.color.values.includes(NaN)) {
-        const NaNIndex = this.color.values.indexOf(NaN);
-
         throw new DalyaError(
-          'Dalya: Unsupported color values. Given color type `%s` includes value `%s`. This should be number type',
+          'Dalya: Unsupported color values. Given color type `%s` includes NaN values. Color values should be number type',
           this.color.type,
-          String(this.color.values[NaNIndex]),
         );
       }
 
@@ -79,6 +81,7 @@ export function colorObjectGenerator(color: ColorObjectGeneratorPrarams): {
       if (this.color.values[3]) {
         formattedValues.push(this.color.values[3]);
       }
+
       return {
         type: this.color.type,
         values: formattedValues,

@@ -74,7 +74,7 @@ export function recomposeColor(color: ColorObject): string {
  * @param color - CSS color, i.e. #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color()
  * @returns - color object
  */
-function decomposeColor(color: string | ColorObject): ColorObject {
+export function decomposeColor(color: string | ColorObject): ColorObject {
   // Idempotent:
   if (isColorObject(color)) {
     return color;
@@ -88,20 +88,20 @@ function decomposeColor(color: string | ColorObject): ColorObject {
   const isCSSColor = color.match(/(.*(?=))\((.*)\)/);
   if (!isCSSColor) {
     throw new DalyaError(
-      `Dalya: Unsupported ${color} color.
-        'The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().`,
+      'Dalya: Unsupported CSS color `%s`. The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().',
+      color,
     );
   }
 
   const colorFormat = isCSSColor[1].toString(); // rgba
-  const colorValue = isCSSColor[2].toString(); // "255, 255, 255, 100"
-
   if (!isValidColorFormat(colorFormat)) {
     throw new DalyaError(
-      `Dalya: Unsupported ${color} color
-        'The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().`,
+      'Dalya: Unsupported color format `%s`. The following formats are supported: rgb, rgba, hsl, hsla, and color.',
+      colorFormat,
     );
   }
+
+  const colorValue = isCSSColor[2].toString(); // "255, 255, 255, 100"
 
   // i.e. color(display-p3 0.5 0.3 0.2 /0.4)
   if (colorFormat === 'color') {
@@ -109,7 +109,8 @@ function decomposeColor(color: string | ColorObject): ColorObject {
     const colorSpace = cssColorValuesInString.splice(0, 1).toString(); // display-p3
     if (!isValidColorSpace(colorSpace)) {
       throw new DalyaError(
-        'Dalya: Does not support rgb% values. The following spaces are supported: srgb, display-p3, a98-rgb, prophoto-rgb, rec-2020',
+        'Dalya: Does not support `%s` color space. The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rgb, rec-2020',
+        colorSpace,
       );
     }
 
@@ -140,19 +141,19 @@ function decomposeColor(color: string | ColorObject): ColorObject {
  * @param {string} color - HSL color values
  * @returns {string} rgb color values
  */
-function hslToRgb(color: string): string {
+export function hslToRgb(color: string): string {
   const { type, values } = decomposeColor(color);
   const hue = values[0];
   const saturation = values[1] / 100;
   const lightness = values[2] / 100;
   const area = saturation * Math.min(lightness, 1 - lightness);
-  const scaler = (n: number, k = (n + hue / 30) % 12) =>
-    lightness - area * Math.max(Math.min(k - 3, 9 - k, 1) - 1);
+  const factor = (n: number, k = (n + hue / 30) % 12) =>
+    lightness - area * Math.max(Math.min(k - 3, 9 - k, 1), -1);
 
   const rgb = [
-    Math.round(scaler(0) * 255),
-    Math.round(scaler(8) * 255),
-    Math.round(scaler(4) * 255),
+    Math.round(factor(0) * 255),
+    Math.round(factor(8) * 255),
+    Math.round(factor(4) * 255),
   ] as [number, number, number];
 
   let rgbType = 'rgb';
@@ -170,7 +171,7 @@ function hslToRgb(color: string): string {
  * @param {string} color - CSS color, i.e. #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color()
  * @returns {number} relative brightness of the color in the range 0 - 1
  */
-function getLuminance(color: string) {
+export function getLuminance(color: string) {
   const { type, values } = decomposeColor(color);
 
   let rgb = values as number[];

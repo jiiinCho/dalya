@@ -5,7 +5,7 @@ import {
   CSSInterpolation,
   CreateDalyaStyled as CreateDalyaStyledStyledEngine,
 } from 'dalya-styled-engine';
-import { getDisplayName } from 'dalya-utils/build';
+import { getDisplayName } from 'dalya-utils';
 import propsToClassKey from './propsToClassKey';
 
 import { Theme as DefaultTheme, createTheme } from './createTheme';
