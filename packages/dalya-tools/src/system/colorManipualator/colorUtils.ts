@@ -106,3 +106,13 @@ export function privateConvertHexToRgb(hexValues: string[]): string {
 
   return [...hexToDecimal, ...alpha].join(', ');
 }
+
+export function intToHex(int: number) {
+  let hex = '0';
+
+  if (int < 256) {
+    hex = Math.abs(int).toString(16);
+  }
+
+  return hex.length === 1 ? `0${hex}` : hex;
+}

@@ -6,6 +6,11 @@ import {
   getContrastRatio,
   getLuminance,
   darken,
+  lighten,
+  alpha,
+  rgbToHex,
+  emphasize,
+  colorChannel,
 } from './colorConverter';
 
 describe('colorManipulator', () => {
@@ -93,6 +98,20 @@ describe('colorManipulator', () => {
           'Dalya: Unsuppported hex input./nIt should be either three, six digits or eight digits but got `#rrggbbaa1122`',
         );
       });
+    });
+  });
+
+  describe('rgbToHex', () => {
+    it('converts an rgb color to a hex color', () => {
+      expect(rgbToHex('rgb(169, 79, 211)')).toBe('#a94fd3');
+    });
+
+    it('converts an rgba color to a hex color', () => {
+      expect(rgbToHex('rgba(169, 79, 211, 1)')).toBe('#a94fd3ff');
+    });
+
+    it('idempotent', () => {
+      expect(rgbToHex('#A94FD3')).toBe('#A94FD3');
     });
   });
 
@@ -338,142 +357,157 @@ describe('colorManipulator', () => {
     });
   });
 
-  /*
-
-    describe('rgbToHex', () => {
-    it('converts an rgb color to a hex color', () => {
-      expect(rgbToHex('rgb(169, 79, 211)')).to.equal('#a94fd3');
+  describe('lighten', () => {
+    it("doesn't modify rgb white", () => {
+      expect(lighten('rgb(255, 255, 255)', 0.1)).toBe('rgb(255, 255, 255)');
     });
 
-    it('converts an rgba color to a hex color` ', () => {
-      expect(rgbToHex('rgba(169, 79, 211, 1)')).to.equal('#a94fd3ff');
+    it('lightens rgb black to white when coefficient is 1', () => {
+      expect(lighten('rgb(0, 0, 0)', 1)).toBe('rgb(255, 255, 255)');
     });
 
-    it('idempotent', () => {
-      expect(rgbToHex('#A94FD3')).to.equal('#A94FD3');
-    });
-  });
-  
-  describe('emphasize', () => {
-    it('lightens a dark rgb color with the coefficient provided', () => {
-      expect(emphasize('rgb(1, 2, 3)', 0.4)).to.equal(lighten('rgb(1, 2, 3)', 0.4));
+    it('retains the alpha value in an rgba color', () => {
+      expect(lighten('rgb(255, 255, 255, 0.5)', 0.1)).toBe('rgb(255, 255, 255, 0.5)');
     });
 
-    it('darkens a light rgb color with the coefficient provided', () => {
-      expect(emphasize('rgb(250, 240, 230)', 0.3)).to.equal(darken('rgb(250, 240, 230)', 0.3));
+    it('lightens rgb black by 10% when coefficient is 0.1', () => {
+      expect(lighten('rgb(0, 0, 0)', 0.1)).toBe('rgb(25, 25, 25)');
     });
 
-    it('lightens a dark rgb color with the coefficient 0.15 by default', () => {
-      expect(emphasize('rgb(1, 2, 3)')).to.equal(lighten('rgb(1, 2, 3)', 0.15));
+    it('lightens rgb red by 50% when coefficient is 0.5', () => {
+      expect(lighten('rgb(255, 0, 0)', 0.5)).toBe('rgb(255, 127, 127)');
     });
 
-    it('darkens a light rgb color with the coefficient 0.15 by default', () => {
-      expect(emphasize('rgb(250, 240, 230)')).to.equal(darken('rgb(250, 240, 230)', 0.15));
+    it('lightens rgb grey by 50% when coefficient is 0.5', () => {
+      expect(lighten('rgb(127, 127, 127)', 0.5)).toBe('rgb(191, 191, 191)');
     });
 
-    it('lightens a dark CSS4 color with the coefficient 0.15 by default', () => {
-      expect(emphasize('color(display-p3 0.1 0.1 0.1)')).to.equal(
-        lighten('color(display-p3 0.1 0.1 0.1)', 0.15),
-      );
+    it("doesn't modify rgb colors when coefficient is 0", () => {
+      expect(lighten('rgb(127, 127, 127)', 0)).toBe('rgb(127, 127, 127)');
     });
 
-    it('darkens a light CSS4 color with the coefficient 0.15 by default', () => {
-      expect(emphasize('color(display-p3 1 1 0.1)')).to.equal(
-        darken('color(display-p3 1 1 0.1)', 0.15),
-      );
+    it('lightens hsl red by 50% when coefficient is 0.5', () => {
+      expect(lighten('hsl(0, 100%, 50%)', 0.5)).toBe('hsl(0, 100%, 75%)');
+    });
+
+    it("doesn't modify hsl colors when coefficient is 0", () => {
+      expect(lighten('hsl(0, 100%, 50%)', 0)).toBe('hsl(0, 100%, 50%)');
+    });
+
+    it("doesn't modify hsl colors when `l` is 100%", () => {
+      expect(lighten('hsl(0, 50%, 100%)', 0.5)).toBe('hsl(0, 50%, 100%)');
+    });
+
+    it('lightens CSS4 color red by 50% when coefficient is 0.5', () => {
+      expect(lighten('color(display-p3 1 0 0)', 0.5)).toBe('color(display-p3 1 0.5 0.5)');
+    });
+
+    it("doesn't modify CSS4 color when coefficient is 0", () => {
+      expect(lighten('color(display-p3 1 0 0)', 0)).toBe('color(display-p3 1 0 0)');
+    });
+
+    describe('exceptions', () => {
+      it('throws error if an above-range coefficient is supplied', () => {
+        expect(() => {
+          lighten('rgb(0, 127, 255)', 1.5);
+        }).toThrow('Dalya: The value provided `1.5` is out of range [`0`, `1`].');
+      });
+
+      it('throws error if a below-range coefficient is supplied', () => {
+        expect(() => {
+          lighten('rgb(0, 127, 255)', -0.1);
+        }).toThrow('Dalya: The value provided `-0.1` is out of range [`0`, `1`].');
+      });
     });
   });
 
   describe('alpha', () => {
     it('converts an rgb color to an rgba color with the value provided', () => {
-      expect(alpha('rgb(1, 2, 3)', 0.4)).to.equal('rgba(1, 2, 3, 0.4)');
+      expect(alpha('rgb(1, 2, 3)', 0.4)).toBe('rgba(1, 2, 3, 0.4)');
     });
 
     it('updates an CSS4 color with the alpha value provided', () => {
-      expect(alpha('color(display-p3 1 2 3)', 0.4)).to.equal('color(display-p3 1 2 3 /0.4)');
+      expect(alpha('color(display-p3 1 2 3)', 0.4)).toBe('color(display-p3 1 2 3 /0.4)');
     });
 
     it('updates an rgba color with the alpha value provided', () => {
-      expect(alpha('rgba(255, 0, 0, 0.2)', 0.5)).to.equal('rgba(255, 0, 0, 0.5)');
+      expect(alpha('rgba(255, 0, 0, 0.2)', 0.5)).toBe('rgba(255, 0, 0, 0.5)');
     });
 
     it('converts an hsl color to an hsla color with the value provided', () => {
-      expect(alpha('hsl(0, 100%, 50%)', 0.1)).to.equal('hsla(0, 100%, 50%, 0.1)');
+      expect(alpha('hsl(0, 100%, 50%)', 0.1)).toBe('hsla(0, 100%, 50%, 0.1)');
     });
 
     it('updates an hsla color with the alpha value provided', () => {
-      expect(alpha('hsla(0, 100%, 50%, 0.2)', 0.5)).to.equal('hsla(0, 100%, 50%, 0.5)');
+      expect(alpha('hsla(0, 100%, 50%, 0.2)', 0.5)).toBe('hsla(0, 100%, 50%, 0.5)');
     });
 
-    it('throw on invalid colors', () => {
+    it('throws error on invalid colors', () => {
       expect(() => {
         alpha('white', 0.4);
-      }).toThrowMinified('MUI: Unsupported `white` color');
+      }).toThrow(
+        'Dalya: Unsupported CSS color `white`. The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().',
+      );
     });
   });
 
-  
-
-  describe('lighten', () => {
-    it("doesn't modify rgb white", () => {
-      expect(lighten('rgb(255, 255, 255)', 0.1)).to.equal('rgb(255, 255, 255)');
+  describe('emphasize', () => {
+    it('lightens a dark rgb color with the coefficient provided', () => {
+      expect(emphasize('rgb(1, 2, 3)', 0.4)).toBe(lighten('rgb(1, 2, 3)', 0.4));
     });
 
-    it("doesn't overshoot if an above-range coefficient is supplied", () => {
-      expect(() => {
-        expect(lighten('rgb(0, 127, 255)', 1.5)).to.equal('rgb(255, 255, 255)');
-      }).toErrorDev('MUI: The value provided 1.5 is out of range [0, 1].');
+    it('darkens a light rgb color with the coefficient provided', () => {
+      expect(emphasize('rgb(250, 240, 230)', 0.3)).toBe(darken('rgb(250, 240, 230)', 0.3));
     });
 
-    it("doesn't overshoot if a below-range coefficient is supplied", () => {
-      expect(() => {
-        expect(lighten('rgb(0, 127, 255)', -0.1)).to.equal('rgb(0, 127, 255)');
-      }).toErrorDev('MUI: The value provided -0.1 is out of range [0, 1].');
+    it('lightens a dark rgb color with the coefficient 0.15 by default', () => {
+      expect(emphasize('rgb(1, 2, 3)')).toBe(lighten('rgb(1, 2, 3)', 0.15));
     });
 
-    it('lightens rgb black to white when coefficient is 1', () => {
-      expect(lighten('rgb(0, 0, 0)', 1)).to.equal('rgb(255, 255, 255)');
+    it('darkens a light rgb color with the coefficient 0.15 by default', () => {
+      expect(emphasize('rgb(250, 240, 230)')).toBe(darken('rgb(250, 240, 230)', 0.15));
     });
 
-    it('retains the alpha value in an rgba color', () => {
-      expect(lighten('rgb(255, 255, 255, 0.5)', 0.1)).to.equal('rgb(255, 255, 255, 0.5)');
+    it('lightens a dark CSS4 color with the coefficient 0.15 by default', () => {
+      expect(emphasize('color(display-p3 0.1 0.1 0.1)')).toBe(
+        lighten('color(display-p3 0.1 0.1 0.1)', 0.15),
+      );
     });
 
-    it('lightens rgb black by 10% when coefficient is 0.1', () => {
-      expect(lighten('rgb(0, 0, 0)', 0.1)).to.equal('rgb(25, 25, 25)');
-    });
-
-    it('lightens rgb red by 50% when coefficient is 0.5', () => {
-      expect(lighten('rgb(255, 0, 0)', 0.5)).to.equal('rgb(255, 127, 127)');
-    });
-
-    it('lightens rgb grey by 50% when coefficient is 0.5', () => {
-      expect(lighten('rgb(127, 127, 127)', 0.5)).to.equal('rgb(191, 191, 191)');
-    });
-
-    it("doesn't modify rgb colors when coefficient is 0", () => {
-      expect(lighten('rgb(127, 127, 127)', 0)).to.equal('rgb(127, 127, 127)');
-    });
-
-    it('lightens hsl red by 50% when coefficient is 0.5', () => {
-      expect(lighten('hsl(0, 100%, 50%)', 0.5)).to.equal('hsl(0, 100%, 75%)');
-    });
-
-    it("doesn't modify hsl colors when coefficient is 0", () => {
-      expect(lighten('hsl(0, 100%, 50%)', 0)).to.equal('hsl(0, 100%, 50%)');
-    });
-
-    it("doesn't modify hsl colors when `l` is 100%", () => {
-      expect(lighten('hsl(0, 50%, 100%)', 0.5)).to.equal('hsl(0, 50%, 100%)');
-    });
-
-    it('lightens CSS4 color red by 50% when coefficient is 0.5', () => {
-      expect(lighten('color(display-p3 1 0 0)', 0.5)).to.equal('color(display-p3 1 0.5 0.5)');
-    });
-
-    it("doesn't modify CSS4 color when coefficient is 0", () => {
-      expect(lighten('color(display-p3 1 0 0)', 0)).to.equal('color(display-p3 1 0 0)');
+    it('darkens a light CSS4 color with the coefficient 0.15 by default', () => {
+      expect(emphasize('color(display-p3 1 1 0.1)')).toBe(
+        darken('color(display-p3 1 1 0.1)', 0.15),
+      );
     });
   });
-  */
+
+  describe('colorChannel', () => {
+    it('converts a short hex color to a color channel', () => {
+      expect(colorChannel('#9f3')).toBe('153 255 51');
+    });
+
+    it('converts a long hex color to a colorChannel', () => {
+      expect(colorChannel('#a94fd3')).toBe('169 79 211');
+    });
+
+    it('converts a long alpha hex color to a color channel', () => {
+      expect(colorChannel('#111111f8')).toBe('17 17 17');
+    });
+
+    it('converts rgb to a color channel', () => {
+      expect(colorChannel('rgb(169, 79, 211)')).toBe('169 79 211');
+    });
+
+    it('converts rgba to a color channel', () => {
+      expect(colorChannel('rgba(255, 11, 13, 0.5)')).toBe('255 11 13');
+    });
+
+    it('converts hsl to a color channel', () => {
+      expect(colorChannel('hsl(170, 45%, 50%)')).toBe('170 45% 50%');
+    });
+
+    it('converts hsla to a color channel', () => {
+      expect(colorChannel('hsla(235, 100%, 50%, .5)')).toBe('235 100% 50%');
+    });
+  });
 });

@@ -5,6 +5,7 @@ import {
   unifyToSixDigits,
   colorObjectGenerator,
   privateConvertHexToRgb,
+  intToHex,
 } from './colorUtils';
 import {
   ColorObject,
@@ -53,16 +54,26 @@ export function hexToRgb(color: string): string {
 export function recomposeColor(color: ColorObject): string {
   const { type, values, colorSpace } = color;
 
+  function getCSS4ColorValues(css4ColorValues: ColorObject['values']) {
+    return css4ColorValues
+      .map((value, index) => {
+        if (index >= 3) {
+          return `/${value}`;
+        }
+        return value;
+      })
+      .join(' ');
+  }
+
   switch (type) {
     case 'rgb':
     case 'rgba':
-      return `${type}(${values.map((n, i) => (i < 3 ? Math.round(n) : n)).join(', ')})`;
-      break;
+      return `${type}(${values.map((n, i) => (i < 3 ? Math.trunc(n) : n)).join(', ')})`;
     case 'hsl':
     case 'hsla':
       return `${type}(${values.map((n, i) => (i > 0 && i < 3 ? `${n}%` : n)).join(', ')})`;
     case 'color':
-      return `${type}(${colorSpace} ${values.join(' ')})`;
+      return `${type}(${colorSpace} ${getCSS4ColorValues(values)})`;
     default:
       throw new DalyaError('Dalya: Unsupported color type `%s`. Could not recomposed color', type);
   }
@@ -134,6 +145,25 @@ export function decomposeColor(color: string | ColorObject): ColorObject {
     type: colorFormat as ColorFormat,
     values: colorValue.split(',').map((value: string) => parseFloat(value)),
   }).getColorObject();
+}
+
+/**
+ * Converts rgb color to hex color
+ * @param {string} color - RGB color, i.e rgb(r, g, b)
+ * @returns {string} hex color i.e. #rrggbbaa
+ */
+export function rgbToHex(color: string): string {
+  // Idempotent
+  if (color.startsWith('#')) {
+    return color;
+  }
+
+  const { values } = decomposeColor(color);
+  const hexColorValues = values
+    .map((value, index) => intToHex(index === 3 ? Math.round(255 * value) : value))
+    .join('');
+
+  return `#${hexColorValues}`;
 }
 
 /**
@@ -257,4 +287,60 @@ export function lighten(color: string, coefficient: number): string {
   }
 
   return recomposeColor({ type, values: colorValues, colorSpace });
+}
+
+/**
+ * Sets the absolute transparency of a color. Any existing alpha values are overwritten.
+ * @param {string} color - CSS color, i.e.  CSS color, i.e. #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color()
+ * @param {number} value - Value to set alpha channel, in the range between 0 to 1
+ * @returns {string} A CSS color string.Hex input values are returned as rgb
+ */
+export function alpha(color: string, value: number): string {
+  const { type, values, colorSpace } = decomposeColor(color);
+  const alphaFactor = clamp(value);
+
+  let alphaColorType = type;
+  const alphaColorValues = values;
+
+  if (type === 'rgb' || type === 'hsl') {
+    alphaColorType += 'a';
+  }
+
+  alphaColorValues[3] = alphaFactor;
+
+  return recomposeColor({
+    type: alphaColorType as ColorFormat,
+    values: alphaColorValues,
+    colorSpace,
+  });
+}
+
+/**
+ * Darken or lighten a color depending on its luminance. Light colors are darkend, dark colors are lightend
+ * @param {string} color - CSS color, i.e.  CSS color, i.e. #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color()
+ * @param {number} coefficient - intensity, default value is 0.15. Value requires to be in range from zero to one
+ * @returns {string} CSS color string. Hex input values are returned as rgb
+ */
+export function emphasize(color: string, coefficient = 0.15): string {
+  return getLuminance(color) > 0.5 ? darken(color, coefficient) : lighten(color, coefficient);
+}
+
+/**
+ * Returns only color values exclude alpha values
+ * @param {string} color - CSS color, i.e.  CSS color, i.e. #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color()
+ */
+export function colorChannel(color: string): string {
+  const { type, values } = decomposeColor(color);
+  const channel = values
+    .slice(0, 3)
+    .map((value, index) => {
+      if (type.indexOf('hsl') !== -1 && index !== 0) {
+        // hsl or hsla
+        return `${value}%`;
+      }
+      return value;
+    })
+    .join(' ');
+
+  return channel;
 }
