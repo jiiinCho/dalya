@@ -20,5 +20,6 @@ export interface CommonColors {
   white: string;
 }
 export type PaletteMode = 'light' | 'dark';
+export type ColorNames = 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
 
 export { Button } from './Button';

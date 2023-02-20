@@ -22,7 +22,7 @@ export function safeRecomposeColor(color: ColorObject, warning?: string): string
 
 // Error handler for darken function, thrown exceptions from decomposeColor would be caught here
 // usage example: safeDarken(palette.error.light, 0.6)
-export function safeDarken(color: string, coefficient: number, warning: string) {
+export function safeDarken(color: string, coefficient: number, warning?: string) {
   try {
     return darken(color, coefficient);
   } catch (error) {
@@ -40,7 +40,7 @@ export function safeDarken(color: string, coefficient: number, warning: string) 
  * @param {string} warning - (optional) custom console error message for development environemnt
  * @returns {string} A CSS color string. Hex input values are returned as rgb
  */
-export function safeLighten(color: string, coefficient: number, warning: string): string {
+export function safeLighten(color: string, coefficient: number, warning?: string): string {
   try {
     return lighten(color, coefficient);
   } catch (error) {

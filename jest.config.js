@@ -8,8 +8,8 @@ const config = {
   },
   transformIgnorePatterns: ['<rootDir>/node_modules/'],
   moduleNameMapper: {
-    '^dalya$': '<rootDir>/packages/dalya-components/src',
-    '^dalya/(.*)$': '<rootDir>/packages/dalya-components/src/$1',
+    '^dalya-components$': '<rootDir>/packages/dalya-components/src',
+    '^dalya-components/(.*)$': '<rootDir>/packages/dalya-components/src/$1',
     '^dalya-styled-engine$': '<rootDir>/packages/dalya-tools/src/styled-engine',
     '^dalya-system$': '<rootDir>/packages/dalya-tools/src/system',
     '^dalya-types$': '<rootDir>/packages/dalya-tools/src/types',

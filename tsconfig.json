@@ -16,8 +16,8 @@
     "types": ["node", "react", "jest"],
     "isolatedModules": true,
     "paths": {
-      "dalya": ["./packages/dalya-components/src"],
-      "dalya/*": ["./packages/dalya-components/src/*"],
+      "dalya-components": ["./packages/dalya-components/src"],
+      "dalya-components/*": ["./packages/dalya-components/src/*"],
       "dalya-styled-engine": ["./packages/dalya-tools/src/styled-engine"],
       "dalya-system": ["./packages/dalya-tools/src/system"],
       "dalya-types": ["./packages/dalya-tools/src/types"],

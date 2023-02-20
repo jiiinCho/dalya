@@ -1,8 +1,12 @@
 export { default as red } from './red';
 export { default as orange } from './orange';
+export { default as deepOrange } from './deepOrange';
 export { default as green } from './green';
 export { default as blue } from './blue';
 export { default as lightBlue } from './lightblue';
 export { default as purple } from './purple';
 export { dark, light } from './texts';
 export type { TypeTextColor, TypeTextColorOptions } from './texts';
+export { default as common } from './common';
+export { default as grey } from './grey';
+export { default as getDefaultColor } from './getDefaultColor';
