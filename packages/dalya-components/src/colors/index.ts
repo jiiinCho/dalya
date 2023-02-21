@@ -10,3 +10,4 @@ export type { TypeTextColor, TypeTextColorOptions } from './texts';
 export { default as common } from './common';
 export { default as grey } from './grey';
 export { default as getDefaultColor } from './getDefaultColor';
+export { default as indigo } from './indigo';

@@ -1,6 +1,14 @@
-import { deepOrange, dark, light } from 'dalya-components/colors';
+import { deepOrange, dark, light, blue, purple, indigo } from 'dalya-components/colors';
 import createPalette from './createPalette';
 import { lighten, darken } from 'dalya-system';
+
+declare module 'dalya-components' {
+  interface ColorNameOverrides {
+    primary: true;
+    secondary: true;
+    indigo: true;
+  }
+}
 
 describe('createPalette', () => {
   it('should create a palette with a rich color object', () => {
@@ -77,26 +85,44 @@ describe('createPalette', () => {
     expect(palette.secondary.contrastText).toBe(light.text.primary);
   });
 
-  /*
-
-
- 
-
- 
-
-  
-
-  
   it('should create a dark palette', () => {
     const palette = createPalette({ mode: 'dark' });
-    expect(palette.primary.main, 'should use blue as the default primary color').to.equal(
-      blue[200],
-    );
-    expect(palette.secondary.main, 'should use purple as the default secondary color').to.equal(
-      purple[200],
-    );
-    expect(palette.text, 'should use dark theme text').to.equal(dark.text);
+    expect(palette.primary.main).toBe(blue[200]);
+    expect(palette.secondary.main).toBe(purple[200]);
+    expect(palette.text).toBe(dark.text);
   });
+
+  describe('augmentColor', () => {
+    const palette = createPalette({});
+
+    it('should accept a color', () => {
+      const color1 = palette.augmentColor({ color: indigo, name: 'primary' });
+
+      expect(color1).toMatchObject({
+        dark: '#303f9f', // 700
+        light: '#7986cb', // 300
+        main: '#3f51b5', // 500
+        contrastText: '#fff',
+      });
+
+      const color2 = palette.augmentColor({
+        color: indigo,
+        mainShade: 400,
+        lightShade: 200,
+        darkShade: 600,
+        name: 'indigo',
+      });
+
+      expect(color2).toMatchObject({
+        light: '#9fa8da', // 200
+        main: '#5c6bc0', // 400
+        dark: '#3949ab', // 600
+        contrastText: '#fff',
+      });
+    });
+  });
+
+  /*
 
   describe('augmentColor', () => {
     const palette = createPalette({});

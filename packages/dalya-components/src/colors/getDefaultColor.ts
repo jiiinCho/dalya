@@ -105,6 +105,28 @@ function getDefaultWarning(mode = 'light') {
   };
 }
 
+// function getDefaultCustom(color: string, mode = 'light') {
+//   // Users can assign new colors but how this can be stored?
+//   // Can we write that on their file system? and access it from their local file?
+// const colorDefinitions = getCustomColor(color);
+// if (!colorDefinitions) {
+//   throw new DalyaError('Cannot find color definition') // need to create safeGetDefaultCustomColor
+// }
+//   if (mode === 'dark') {
+//     return {
+//       main: colorDefinitions[400],
+//       light: colorDefinitions[300],
+//       dark: colorDefinitions[700],
+//     };
+//   }
+
+//     return {
+//       main: colorDefinitions[800],
+//       light: colorDefinitions[500],
+//       dark: colorDefinitions[900],
+//     };
+// }
+
 function getDefaultColor(color: ColorNames, mode: PaletteMode = 'light') {
   switch (color) {
     case 'primary':
