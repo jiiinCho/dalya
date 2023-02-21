@@ -23,11 +23,7 @@ function createPalette(palette: PaletteOptions): Palette {
 
   const { getPaletteColor, getContrastText, safeAugmentColor } = createPaletteUtils;
 
-  const getAugmentPaletteColor = getPaletteColor({
-    palette,
-    mode,
-    contrastThreshold,
-  });
+  const getAugmentPaletteColor = getPaletteColor(palette);
 
   const paletteTargetObject = {
     // A collection of common colors

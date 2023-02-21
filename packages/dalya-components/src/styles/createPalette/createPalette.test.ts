@@ -1,5 +1,6 @@
 import { deepOrange, dark, light } from 'dalya-components/colors';
 import createPalette from './createPalette';
+import { lighten, darken } from 'dalya-system';
 
 describe('createPalette', () => {
   it('should create a palette with a rich color object', () => {
@@ -14,7 +15,7 @@ describe('createPalette', () => {
       contrastText: dark.text.primary,
     });
   });
-  /*
+
   it('should create a palette with custom colors', () => {
     const palette = createPalette({
       primary: {
@@ -25,15 +26,16 @@ describe('createPalette', () => {
       },
     });
 
-    expect(palette.primary.main).to.equal(deepOrange[500]);
+    expect(palette.primary.main).toBe(deepOrange[500]);
+    expect(palette.primary.contrastText).toBe('#ffffff');
   });
 
-  it('should calculate light and dark colors if not provided', () => {
+  it('should create 20% lighter shades from main color and 0.3% darker shades from main color if not provided', () => {
     const palette = createPalette({
       primary: { main: deepOrange[500] },
     });
 
-    expect(palette.primary).to.deep.include({
+    expect(palette.primary).toMatchObject({
       main: deepOrange[500],
       light: lighten(deepOrange[500], 0.2),
       dark: darken(deepOrange[500], 0.3),
@@ -46,7 +48,7 @@ describe('createPalette', () => {
       tonalOffset: 0.1,
     });
 
-    expect(palette.primary).to.deep.include({
+    expect(palette.primary).toMatchObject({
       main: deepOrange[500],
       light: lighten(deepOrange[500], 0.1),
       dark: darken(deepOrange[500], 0.15),
@@ -62,7 +64,7 @@ describe('createPalette', () => {
       },
     });
 
-    expect(palette.primary).to.deep.include({
+    expect(palette.primary).toMatchObject({
       main: deepOrange[500],
       light: lighten(deepOrange[500], 0.8),
       dark: darken(deepOrange[500], 0.5),
@@ -71,16 +73,20 @@ describe('createPalette', () => {
 
   it('should calculate contrastText using the provided contrastThreshold', () => {
     const palette = createPalette({ contrastThreshold: 7 });
-    expect(
-      palette.primary.contrastText,
-      'should use dark.text.primary as the default primary contrastText color',
-    ).to.equal(light.text.primary);
-    expect(
-      palette.secondary.contrastText,
-      'should use dark.text.primary as the default secondary contrastText color',
-    ).to.equal(light.text.primary);
+    expect(palette.primary.contrastText).toBe(light.text.primary);
+    expect(palette.secondary.contrastText).toBe(light.text.primary);
   });
 
+  /*
+
+
+ 
+
+ 
+
+  
+
+  
   it('should create a dark palette', () => {
     const palette = createPalette({ mode: 'dark' });
     expect(palette.primary.main, 'should use blue as the default primary color').to.equal(

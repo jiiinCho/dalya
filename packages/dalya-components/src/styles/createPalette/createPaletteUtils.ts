@@ -1,7 +1,7 @@
 import { getContrastRatio, lighten, darken } from 'dalya-system';
 import { DalyaError } from 'dalya-utils';
 
-import { PaletteMode, ColorNames } from 'dalya-components';
+import { ColorNames } from 'dalya-components';
 import { dark, light, getDefaultColor } from 'dalya-components/colors';
 import {
   SimplePaletteColorOptions,
@@ -48,6 +48,7 @@ type AugmentColorConfig = {
   tonalOffsetDark: number;
   contrastThreshold: number;
 };
+
 function internalGetAugmentColor(augmentColorConfig: AugmentColorConfig) {
   const augmentColorHandler = {
     augmentColorConfig,
@@ -141,17 +142,9 @@ function safeAugmentColor(options: PaletteAugmentColorOptions): PaletteColor | n
   }
 }
 
-interface PaletteColorConfig {
-  palette: PaletteOptions;
-  mode: PaletteMode;
-  contrastThreshold: number;
-}
 // assign default palette color in case wrong palette color input
-function getPaletteColor(paletteColorConfig: PaletteColorConfig) {
-  function internalAssignDefaultPaletteColor(
-    colorName: ColorNames,
-    paletteConfig: PaletteColorConfig,
-  ) {
+function getPaletteColor(paletteColorConfig: PaletteOptions) {
+  function internalAssignDefaultPaletteColor(colorName: ColorNames, paletteConfig: PaletteOptions) {
     const { mode, contrastThreshold } = paletteConfig;
 
     const defaultPaletteColor = getDefaultColor(colorName, mode);
@@ -161,17 +154,16 @@ function getPaletteColor(paletteColorConfig: PaletteColorConfig) {
   }
 
   function getAugmentPaletteColor(
-    this: { paletteColorConfig: PaletteColorConfig },
+    this: { paletteColorConfig: PaletteOptions },
     options: Omit<PaletteAugmentColorOptions, 'color'> &
       Partial<Pick<PaletteAugmentColorOptions, 'color'>>,
   ) {
-    const { palette } = this.paletteColorConfig;
-    const customColor = palette[options.name];
+    const customColor = this.paletteColorConfig[options.name];
     if (!customColor) {
       return internalAssignDefaultPaletteColor(options.name, this.paletteColorConfig);
     }
 
-    const safeAugementColorOptions = { ...options, color: customColor };
+    const safeAugementColorOptions = { ...this.paletteColorConfig, ...options, color: customColor };
     const customColorWithShades = safeAugmentColor(safeAugementColorOptions);
 
     return (
