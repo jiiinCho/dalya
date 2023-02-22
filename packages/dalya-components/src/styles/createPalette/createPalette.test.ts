@@ -1,14 +1,7 @@
 import { deepOrange, dark, light, blue, purple, indigo } from 'dalya-components/colors';
 import createPalette from './createPalette';
 import { lighten, darken } from 'dalya-system';
-
-declare module 'dalya-components' {
-  interface ColorNameOverrides {
-    primary: true;
-    secondary: true;
-    indigo: true;
-  }
-}
+import { augmentColor } from './createPaletteUtils';
 
 describe('createPalette', () => {
   it('should create a palette with a rich color object', () => {
@@ -122,26 +115,26 @@ describe('createPalette', () => {
     });
   });
 
-  /*
-
   describe('augmentColor', () => {
     const palette = createPalette({});
 
     it('should accept a color', () => {
       const color1 = palette.augmentColor({ color: indigo, name: 'primary' });
-      expect(color1).to.deep.include({
+      expect(color1).toMatchObject({
         dark: '#303f9f',
         light: '#7986cb',
         main: '#3f51b5',
         contrastText: '#fff',
       });
+
       const color2 = palette.augmentColor({
         color: indigo,
+        name: 'primary',
         mainShade: 400,
         lightShade: 200,
         darkShade: 600,
       });
-      expect(color2).to.deep.include({
+      expect(color2).toMatchObject({
         light: '#9fa8da',
         main: '#5c6bc0',
         dark: '#3949ab',
@@ -154,17 +147,42 @@ describe('createPalette', () => {
         color: {
           main: indigo[500],
         },
+        name: 'indigo',
       });
-      expect(color).to.deep.include({
+      expect(color).toMatchObject({
         light: 'rgb(101, 115, 195)',
         main: '#3f51b5',
         dark: 'rgb(44, 56, 126)',
         contrastText: '#fff',
       });
     });
+
+    describe('exceptions', () => {
+      it('should throw an error for missing `main` field in color object', () => {
+        expect(() => {
+          augmentColor({
+            color: {},
+            name: 'indigo',
+          });
+        }).toThrow('Error');
+      });
+
+      it('should throw an error for wrong color values', () => {
+        expect(
+          augmentColor({
+            color: {
+              main: 'foo',
+            },
+            name: 'indigo',
+          }),
+        ).toThrow('Error');
+      });
+    });
   });
 
-  it('should create a palette with unique object references', () => {
+  /*
+
+   it('should create a palette with unique object references', () => {
     const redPalette = createPalette({ background: { paper: 'red' } });
     const bluePalette = createPalette({ background: { paper: 'blue' } });
     expect(redPalette).not.to.equal(bluePalette);

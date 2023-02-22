@@ -25,12 +25,13 @@ export interface PaletteAugmentColorOptions {
   mainShade?: keyof Color;
   lightShade?: keyof Color;
   darkShade?: keyof Color;
-  name: ColorNames;
+  name: string;
   tonalOffset?: any;
   contrastThreshold?: number;
 }
 
 type PaletteColors = Record<ColorNames, PaletteColorOptions>;
+type PaletteCustomColors = Record<string, PaletteColorOptions>;
 export interface PaletteOptions extends TypeTextColorOptions, Partial<PaletteColors> {
   common?: Partial<CommonColors>;
   mode?: PaletteMode;
@@ -38,6 +39,8 @@ export interface PaletteOptions extends TypeTextColorOptions, Partial<PaletteCol
   tonalOffset?: PaletteTonalOffset;
   grey?: Color;
   getContrastText?: (background: string, contrastThreshold?: number) => string;
+  // consumer can assign additional colors
+  customColors?: PaletteCustomColors[];
 }
 
 export interface Palette extends TypeTextColor {

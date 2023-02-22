@@ -23,7 +23,7 @@ function createPalette(palette: PaletteOptions): Palette {
 
   const { getPaletteColor, getContrastText, safeAugmentColor } = createPaletteUtils;
 
-  const getAugmentPaletteColor = getPaletteColor(palette);
+  const { getDefaultAugmentPaletteColor } = getPaletteColor(palette);
 
   const paletteTargetObject = {
     // A collection of common colors
@@ -31,22 +31,22 @@ function createPalette(palette: PaletteOptions): Palette {
     // either light or dark
     mode,
     // The colors used to represent primary interface elements
-    primary: getAugmentPaletteColor({ name: 'primary' }),
+    primary: getDefaultAugmentPaletteColor({ name: 'primary' }),
     // The colors used to represent secondary interface elements
-    secondary: getAugmentPaletteColor({
+    secondary: getDefaultAugmentPaletteColor({
       name: 'secondary',
       mainShade: 'A400',
       lightShade: 'A200',
       darkShade: 'A700',
     }),
     // The colors used to represent interface elements that the user should be aware of
-    error: getAugmentPaletteColor({ name: 'error' }),
+    error: getDefaultAugmentPaletteColor({ name: 'error' }),
     // The colors used to represent potentially dangerous actions or important messages
-    warning: getAugmentPaletteColor({ name: 'warning' }),
+    warning: getDefaultAugmentPaletteColor({ name: 'warning' }),
     // The colors used to represent information to the user that is neutral and not necessarily important
-    info: getAugmentPaletteColor({ name: 'info' }),
+    info: getDefaultAugmentPaletteColor({ name: 'info' }),
     // The colors used to indicate the successful completion of an action that user triggered
-    success: getAugmentPaletteColor({ name: 'success' }),
+    success: getDefaultAugmentPaletteColor({ name: 'success' }),
     // The grey colors
     grey,
     // Used by `getContrastText()` to maximize the contrast between background and text. Default is 3 (Web Content Accessibility Guidelines standard)

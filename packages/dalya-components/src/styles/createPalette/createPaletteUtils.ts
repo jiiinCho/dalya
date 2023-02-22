@@ -40,7 +40,7 @@ function getContrastText(background: string, contrastThreshold = 3) {
 }
 
 function isSimplePaletteColorOptions(colorOptions: any): colorOptions is SimplePaletteColorOptions {
-  return Object.prototype.hasOwnProperty.call(colorOptions, 'main');
+  return Object.keys(colorOptions).length !== 0 && colorOptions.main;
 }
 
 type AugmentColorConfig = {
@@ -59,12 +59,12 @@ function internalGetAugmentColor(augmentColorConfig: AugmentColorConfig) {
     }) {
       const { tonalOffsetLight, tonalOffsetDark, contrastThreshold } = this.augmentColorConfig;
 
-      return {
+      return () => ({
         main: baseColor.main,
         light: baseColor.light || lighten(baseColor.main, tonalOffsetLight),
         dark: baseColor.dark || darken(baseColor.main, tonalOffsetDark),
         contrastText: getContrastText(baseColor.main, contrastThreshold),
-      };
+      });
     },
   };
   return augmentColorHandler.generateAugmentColor.bind(augmentColorHandler);
@@ -72,7 +72,7 @@ function internalGetAugmentColor(augmentColorConfig: AugmentColorConfig) {
 
 // augment - additional functionality or extention
 // assign default color.main, color.light, color.dark and color.contrastText
-function augmentColor({
+export function augmentColor({
   color,
   name,
   mainShade = 500,
@@ -89,10 +89,11 @@ function augmentColor({
     tonalOffsetDark,
     tonalOffsetLight,
   });
-
   if (isSimplePaletteColorOptions(color)) {
+    console.log('isSimplePalleteColorOptions', !color.main);
     // this exception is for the use case without typescript support
     if (!color.main) {
+      console.log('should throw error first');
       throw new DalyaError(
         'Dalya: Color object in augmentColor({color}) should have `main` property. Error in color name: %s',
         String(name),
@@ -111,10 +112,12 @@ function augmentColor({
       main: color.main,
       light: color.light,
       dark: color.dark,
-    });
+    })();
   }
 
   const colorPartialMain = color[mainShade];
+  console.log('isSimplePcolorPartialMainalleteColorOptions', colorPartialMain);
+
   if (!colorPartialMain) {
     throw new DalyaError(
       'Dalya: Color object in augmentColor({color}) should have `%s` property. Error in color name: %s',
@@ -127,7 +130,7 @@ function augmentColor({
     main: colorPartialMain,
     light: color[lightShade],
     dark: color[darkShade],
-  });
+  })();
 }
 
 function safeAugmentColor(options: PaletteAugmentColorOptions): PaletteColor | null {
@@ -142,9 +145,31 @@ function safeAugmentColor(options: PaletteAugmentColorOptions): PaletteColor | n
   }
 }
 
-// assign default palette color in case wrong palette color input
+type DefaultAugmentPaletteColorOptions = Omit<PaletteAugmentColorOptions, 'color' | 'name'> & {
+  color?: PaletteAugmentColorOptions['color'];
+  name: ColorNames;
+};
+
+type CustomAugmentPaletteColorOptions = Omit<PaletteAugmentColorOptions, 'color'> & {
+  color?: PaletteAugmentColorOptions['color'];
+};
+
+interface AugmentedPaletteGenerator {
+  paletteColorConfig: PaletteOptions;
+  internalGetDefaultAugmentPaletteColor: (
+    options: DefaultAugmentPaletteColorOptions,
+  ) => PaletteColor;
+  // TODO: remove in case no use
+  internalGetCustomAugmentPaletteColor: (
+    options: CustomAugmentPaletteColorOptions,
+  ) => PaletteColor | null;
+}
+
+// getPaletteColor will assign default palette color in cases:
+// - if there is no overwrite in ColorNames (primary, secondary..)
+// - missing 'main' field, it will console.error
 function getPaletteColor(paletteColorConfig: PaletteOptions) {
-  function internalAssignDefaultPaletteColor(colorName: ColorNames, paletteConfig: PaletteOptions) {
+  function privateAssignDefaultPaletteColor(colorName: ColorNames, paletteConfig: PaletteOptions) {
     const { mode, contrastThreshold } = paletteConfig;
 
     const defaultPaletteColor = getDefaultColor(colorName, mode);
@@ -153,14 +178,13 @@ function getPaletteColor(paletteColorConfig: PaletteOptions) {
     return { ...defaultPaletteColor, contrastText };
   }
 
-  function getAugmentPaletteColor(
-    this: { paletteColorConfig: PaletteOptions },
-    options: Omit<PaletteAugmentColorOptions, 'color'> &
-      Partial<Pick<PaletteAugmentColorOptions, 'color'>>,
+  function internalGetDefaultAugmentPaletteColor(
+    this: AugmentedPaletteGenerator,
+    options: DefaultAugmentPaletteColorOptions,
   ) {
     const customColor = this.paletteColorConfig[options.name];
     if (!customColor) {
-      return internalAssignDefaultPaletteColor(options.name, this.paletteColorConfig);
+      return privateAssignDefaultPaletteColor(options.name, this.paletteColorConfig);
     }
 
     const safeAugementColorOptions = { ...this.paletteColorConfig, ...options, color: customColor };
@@ -168,13 +192,55 @@ function getPaletteColor(paletteColorConfig: PaletteOptions) {
 
     return (
       customColorWithShades ||
-      internalAssignDefaultPaletteColor(options.name, this.paletteColorConfig)
+      privateAssignDefaultPaletteColor(options.name, this.paletteColorConfig)
     );
   }
 
-  const paletteAugmentColorHandler = { paletteColorConfig, getAugmentPaletteColor };
+  function internalGetCustomAugmentPaletteColor(
+    this: AugmentedPaletteGenerator,
+    options: CustomAugmentPaletteColorOptions,
+  ) {
+    const colorName = options.name;
+    const customColor = this.paletteColorConfig.customColors?.find(
+      (customColorObject) => customColorObject[colorName],
+    );
+    if (!customColor) {
+      console.error(
+        'Dalya: Could not find color name `%s`. Assign color values in createPalette(options.customColors)',
+        colorName,
+      );
+      return null;
+    }
 
-  return paletteAugmentColorHandler.getAugmentPaletteColor.bind(paletteAugmentColorHandler);
+    const safeAugementColorOptions = {
+      ...this.paletteColorConfig,
+      ...options,
+      color: customColor,
+    };
+
+    return safeAugmentColor(safeAugementColorOptions);
+  }
+
+  const paletteAugmentColorHandler = {
+    paletteColorConfig,
+    internalGetDefaultAugmentPaletteColor,
+    internalGetCustomAugmentPaletteColor,
+  };
+
+  const getDefaultAugmentPaletteColor =
+    paletteAugmentColorHandler.internalGetDefaultAugmentPaletteColor.bind(
+      paletteAugmentColorHandler,
+    );
+
+  const getCustomAugmentPaletteColor =
+    paletteAugmentColorHandler.internalGetCustomAugmentPaletteColor.bind(
+      paletteAugmentColorHandler,
+    );
+
+  return {
+    getDefaultAugmentPaletteColor,
+    getCustomAugmentPaletteColor,
+  };
 }
 
 const createPaletteUtils = {
