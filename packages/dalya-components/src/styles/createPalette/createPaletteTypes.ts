@@ -1,4 +1,4 @@
-import { CommonColors, Color, PaletteMode, ColorNames } from 'dalya-components';
+import { CommonColors, Color, PaletteMode, ColorNames, colorNames } from 'dalya-components';
 import { TypeTextColor, TypeTextColorOptions } from 'dalya-components/colors';
 
 type ColorPartial = Partial<Color>;
@@ -58,4 +58,14 @@ export interface Palette extends TypeTextColor {
   getContrastText: (background: string, contrastThreshold?: number) => string;
   augmentColor: (options: PaletteAugmentColorOptions) => PaletteColor | null;
   getPaletteColor: (colorName: string) => PaletteColor | null;
+}
+
+export function isColorNames(name: any): name is ColorNames {
+  return colorNames.includes(name);
+}
+
+export function isSimplePaletteColorOptions(
+  colorOptions: any,
+): colorOptions is SimplePaletteColorOptions {
+  return colorOptions.main || colorOptions.light || colorOptions.dark;
 }

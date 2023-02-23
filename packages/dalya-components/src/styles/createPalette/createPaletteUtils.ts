@@ -1,18 +1,15 @@
 import { getContrastRatio, lighten, darken } from 'dalya-system';
 import { DalyaError } from 'dalya-utils';
 
-import { ColorNames, colorNames } from 'dalya-components';
+import { ColorNames } from 'dalya-components';
 import { dark, light, getDefaultColor } from 'dalya-components/colors';
 import {
   SimplePaletteColorOptions,
   PaletteAugmentColorOptions,
   PaletteColor,
   PaletteOptions,
+  isSimplePaletteColorOptions,
 } from './createPaletteTypes';
-
-export function isColorNames(name: any): name is ColorNames {
-  return colorNames.includes(name);
-}
 
 /**
  * Returns default theme text color based on given contrastThreshold and print error message if given background color could not meet WCAG minimum contrast ratio (3)
@@ -43,30 +40,6 @@ function getContrastText(background: string, contrastThreshold = 3) {
   return contrastText;
 }
 
-function isSimplePaletteColorOptions(colorOptions: any): colorOptions is SimplePaletteColorOptions {
-  return colorOptions.main || colorOptions.light || colorOptions.dark;
-}
-
-type AugmentColorConfig = {
-  tonalOffsetLight: number;
-  tonalOffsetDark: number;
-  contrastThreshold: number;
-};
-
-function internalGetAugmentColor(augmentColorConfig: AugmentColorConfig) {
-  const { tonalOffsetLight, tonalOffsetDark, contrastThreshold } = augmentColorConfig;
-  const generateAugmentColor = (baseColor: SimplePaletteColorOptions) => {
-    return {
-      main: baseColor.main,
-      light: baseColor.light || lighten(baseColor.main, tonalOffsetLight),
-      dark: baseColor.dark || darken(baseColor.main, tonalOffsetDark),
-      contrastText: getContrastText(baseColor.main, contrastThreshold),
-    };
-  };
-
-  return (baseColor: SimplePaletteColorOptions) => generateAugmentColor(baseColor);
-}
-
 // augment - additional functionality or extention
 // assign default color.main, color.light, color.dark and color.contrastText
 export function augmentColor({
@@ -81,10 +54,11 @@ export function augmentColor({
   const tonalOffsetLight = tonalOffset.light || tonalOffset;
   const tonalOffsetDark = tonalOffset.dark || tonalOffset * 1.5;
 
-  const getAugmentColor = internalGetAugmentColor({
-    contrastThreshold,
-    tonalOffsetDark,
-    tonalOffsetLight,
+  const paletteColorGenerator = (baseColor: SimplePaletteColorOptions) => ({
+    main: baseColor.main,
+    light: baseColor.light || lighten(baseColor.main, tonalOffsetLight),
+    dark: baseColor.dark || darken(baseColor.main, tonalOffsetDark),
+    contrastText: getContrastText(baseColor.main, contrastThreshold),
   });
 
   if (isSimplePaletteColorOptions(color)) {
@@ -106,7 +80,7 @@ export function augmentColor({
       );
     }
 
-    return getAugmentColor({
+    return paletteColorGenerator({
       main: color.main,
       light: color.light,
       dark: color.dark,
@@ -122,7 +96,7 @@ export function augmentColor({
     );
   }
 
-  return getAugmentColor({
+  return paletteColorGenerator({
     main: colorMain,
     light: color[lightShade],
     dark: color[darkShade],
@@ -156,25 +130,27 @@ type CustomAugmentPaletteColorOptions = Omit<PaletteAugmentColorOptions, 'color'
 function getPaletteColor(paletteColorConfig: PaletteOptions) {
   const { mode, contrastThreshold } = paletteColorConfig;
 
-  function privateAssignDefaultPaletteColor(colorName: ColorNames) {
+  const assignDefaultPaletteColor = (colorName: ColorNames) => {
     const defaultPaletteColor = getDefaultColor(colorName, mode);
     const contrastText = getContrastText(defaultPaletteColor.main, contrastThreshold);
 
     return { ...defaultPaletteColor, contrastText };
-  }
-  function internalGetDefaultAugmentPaletteColor(options: DefaultAugmentPaletteColorOptions) {
+  };
+
+  const getDefaultAugmentPaletteColor = (options: DefaultAugmentPaletteColorOptions) => {
     const customColor = paletteColorConfig[options.name];
+
     if (!customColor) {
-      return privateAssignDefaultPaletteColor(options.name);
+      return assignDefaultPaletteColor(options.name);
     }
 
     const safeAugementColorOptions = { ...paletteColorConfig, ...options, color: customColor };
     const customColorWithShades = safeAugmentColor(safeAugementColorOptions);
 
-    return customColorWithShades || privateAssignDefaultPaletteColor(options.name);
-  }
+    return customColorWithShades || assignDefaultPaletteColor(options.name);
+  };
 
-  function internalGetCustomAugmentPaletteColor(options: CustomAugmentPaletteColorOptions) {
+  const getCustomAugmentPaletteColor = (options: CustomAugmentPaletteColorOptions) => {
     const colorName = options.name;
     const customColor = paletteColorConfig.customColors?.find(
       (customColorObject) => customColorObject[colorName],
@@ -196,23 +172,7 @@ function getPaletteColor(paletteColorConfig: PaletteOptions) {
     };
 
     return safeAugmentColor(safeAugementColorOptions);
-  }
-
-  const paletteAugmentColorHandler = {
-    paletteColorConfig,
-    internalGetDefaultAugmentPaletteColor,
-    internalGetCustomAugmentPaletteColor,
   };
-
-  const getDefaultAugmentPaletteColor =
-    paletteAugmentColorHandler.internalGetDefaultAugmentPaletteColor.bind(
-      paletteAugmentColorHandler,
-    );
-
-  const getCustomAugmentPaletteColor =
-    paletteAugmentColorHandler.internalGetCustomAugmentPaletteColor.bind(
-      paletteAugmentColorHandler,
-    );
 
   return {
     getDefaultAugmentPaletteColor,
@@ -223,19 +183,19 @@ function getPaletteColor(paletteColorConfig: PaletteOptions) {
 const createPaletteUtils = (paletteOptions: PaletteOptions) => {
   const { contrastThreshold, tonalOffset } = paletteOptions;
 
-  const defaultGetContrastText = (background: string) =>
+  const getContrastTextWrapper = (background: string) =>
     getContrastText(background, contrastThreshold);
 
-  const defaultGetPaletteColor = (palette: PaletteOptions) =>
-    getPaletteColor({ ...paletteOptions, ...palette });
+  const getAugmentedColorWrapper = () => getPaletteColor(paletteOptions);
 
-  const defaultSafeAugmentColor = (paletteAugmentColorOptions: PaletteAugmentColorOptions) =>
+  const safeAugmentColorWrapper = (paletteAugmentColorOptions: PaletteAugmentColorOptions) =>
     safeAugmentColor({ ...paletteAugmentColorOptions, contrastThreshold, tonalOffset });
 
   return {
-    getContrastText: defaultGetContrastText,
-    getPaletteColor: defaultGetPaletteColor,
-    safeAugmentColor: defaultSafeAugmentColor,
+    getContrastText: getContrastTextWrapper,
+    getAugmentedColor: getAugmentedColorWrapper,
+    safeAugmentColor: safeAugmentColorWrapper,
   };
 };
+
 export default createPaletteUtils;
