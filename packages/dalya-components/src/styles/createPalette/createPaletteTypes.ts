@@ -57,4 +57,5 @@ export interface Palette extends TypeTextColor {
   grey: Color;
   getContrastText: (background: string, contrastThreshold?: number) => string;
   augmentColor: (options: PaletteAugmentColorOptions) => PaletteColor | null;
+  getPaletteColor: (colorName: string) => PaletteColor | null;
 }

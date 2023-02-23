@@ -94,52 +94,51 @@ describe('createPalette', () => {
   });
 
   describe('warnings', () => {
-    it('throws an exception when an invalid mode is specified', () => {
-      const logErrorSpy = jest.spyOn(console, 'error');
+    const logErrorSpy = jest.spyOn(console, 'error');
+
+    it('logs an error when an invalid mode is specified', () => {
       // @ts-ignore
       createPalette({ mode: 'foo' });
       expect(logErrorSpy).toHaveBeenCalledWith('Dalya: The palette mode `foo` is not supported');
     });
 
-    it('throws an exception when a wrong color is provided', () => {
-      expect(() => createPalette({ primary: '#fff' })).toThrowMinified(
-        [
-          'MUI: The color (primary) provided to augmentColor(color) is invalid.',
-          'The color object needs to have a `main` property or a `500` property.',
-        ].join('\n'),
+    it('logs an error when a wrong color property is provided', () => {
+      // @ts-ignore
+      createPalette({ primary: '#fff' });
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        'DalyaError: Dalya: The color (primary) provided to augmentColor(color) is invalid. The color object needs to have color.main or color[500] value',
       );
-      expect(() => createPalette({ primary: { main: { foo: 'bar' } } })).toThrowMinified(
-        [
-          'MUI: The color (primary) provided to augmentColor(color) is invalid.',
-          '`color.main` should be a string, but `{"foo":"bar"}` was provided instead.',
-        ].join('\n'),
+
+      // @ts-ignore
+      createPalette({ primary: { main: { foo: 'bar' } } });
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        'DalyaError: Dalya: The color (primary) provided to augmentColor(color) is invalid. color.main should be a string type, but {{"foo":"bar"}} was provided instead',
       );
-      expect(() => createPalette({ primary: { main: undefined } })).toThrowMinified(
+
+      // @ts-ignore
+      createPalette({ primary: { main: undefined } });
+      expect(logErrorSpy).toHaveBeenCalledWith(
+        'DalyaError: Dalya: The color (primary) provided to augmentColor(color) is invalid. The color object needs to have color.main or color[500] value',
+      );
+    });
+
+    it('logs an error when the contrast ratio does not reach 3:1', () => {
+      const { getContrastText } = createPalette({
+        contrastThreshold: 0,
+      });
+
+      getContrastText('#fefefe');
+
+      expect(logErrorSpy).toHaveBeenCalledWith(
         [
-          'MUI: The color (primary) provided to augmentColor(color) is invalid.',
-          '`color.main` should be a string, but `undefined` was provided instead.',
+          `Dalya: The contrast ratio of 1.0086455331412105: 1 for #fff on #fefefe`,
+          'falls below the WCAG recommneded absolute minimum contrast ratio of 3:1.',
+          'https://www.w3.org/TR/2008/REC-WCAG20-20081211/#visual-audio-contrast-contrast',
         ].join('\n'),
       );
     });
-    /*
-   
-
-    it('logs an error when the contrast ratio does not reach AA', () => {
-      let getContrastText;
-      expect(() => {
-        ({ getContrastText } = createPalette({
-          contrastThreshold: 0,
-        }));
-      }).not.toErrorDev();
-
-      expect(() => {
-        getContrastText('#fefefe');
-      }).toErrorDev('falls below the WCAG recommended absolute minimum contrast ratio of 3:1');
-    });
-    */
   });
 
-  /*
   describe('augmentColor', () => {
     const palette = createPalette({});
 
@@ -193,7 +192,7 @@ describe('createPalette', () => {
             name: 'indigo',
           });
         }).toThrow(
-          'Dalya: Color object in augmentColor({color}) should have color.main value. Error in color name: indigo',
+          'Dalya: The color (indigo) provided to augmentColor(color) is invalid. The color object needs to have color.main or color[500] value',
         );
       });
 
@@ -207,7 +206,7 @@ describe('createPalette', () => {
             name: 'indigo',
           });
         }).toThrow(
-          'Dalya: color.main in augmentColor({color}) should be string type, but got number type',
+          'Dalya: The color (indigo) provided to augmentColor(color) is invalid. color.main should be a string type, but {123} was provided instead',
         );
       });
 
@@ -221,17 +220,43 @@ describe('createPalette', () => {
             name: 'indigo',
           });
         }).toThrow(
-          'Dalya: Color object in augmentColor({color}) should have color[500] value. Error in color name: indigo',
+          'Dalya: The color (indigo) provided to augmentColor(color) is invalid. The color object needs to have color.main or color[500] value',
         );
       });
     });
   });
 
+  describe('getPaletteColor', () => {
+    it('should be able to assign custom color fields', () => {
+      const palette = createPalette({
+        customColors: [
+          {
+            indigo,
+          },
+        ],
+      });
 
+      expect(palette.getPaletteColor('indigo')).toEqual({
+        contrastText: '#fff',
+        dark: '#303f9f',
+        light: '#7986cb',
+        main: '#3f51b5',
+      });
+    });
 
+    it('should be able to get default color', () => {
+      const palette = createPalette({});
 
+      const primaryDefault = {
+        main: blue[700],
+        light: blue[400],
+        dark: blue[800],
+      };
 
-  
-
-  */
+      expect(palette.getPaletteColor('primary')).toEqual({
+        ...primaryDefault,
+        contrastText: '#fff',
+      });
+    });
+  });
 });

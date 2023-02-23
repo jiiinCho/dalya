@@ -20,6 +20,7 @@ export interface CommonColors {
   white: string;
 }
 export type PaletteMode = 'light' | 'dark';
-export type ColorNames = 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
+export const colorNames = ['primary', 'secondary', 'error', 'info', 'success', 'warning'] as const;
+export type ColorNames = typeof colorNames[number];
 
 export { Button } from './Button';

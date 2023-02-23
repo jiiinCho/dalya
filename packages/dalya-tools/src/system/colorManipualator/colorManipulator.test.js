@@ -407,13 +407,13 @@ describe('colorManipulator', () => {
     });
 
     describe('exceptions', () => {
-      it('throws error if an above-range coefficient is supplied', () => {
+      it('throws an exception when an above-range coefficient is supplied', () => {
         expect(() => {
           lighten('rgb(0, 127, 255)', 1.5);
         }).toThrow('Dalya: The value provided `1.5` is out of range [`0`, `1`].');
       });
 
-      it('throws error if a below-range coefficient is supplied', () => {
+      it('throws an exception when a below-range coefficient is supplied', () => {
         expect(() => {
           lighten('rgb(0, 127, 255)', -0.1);
         }).toThrow('Dalya: The value provided `-0.1` is out of range [`0`, `1`].');
@@ -442,7 +442,7 @@ describe('colorManipulator', () => {
       expect(alpha('hsla(0, 100%, 50%, 0.2)', 0.5)).toBe('hsla(0, 100%, 50%, 0.5)');
     });
 
-    it('throws error on invalid colors', () => {
+    it('throws an exception for invalid colors', () => {
       expect(() => {
         alpha('white', 0.4);
       }).toThrow(

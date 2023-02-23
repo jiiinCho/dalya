@@ -7,8 +7,7 @@
   "6": "Dalya: Unsupported color format %s. The following formats are supported: rgb, rgba, hsl, hsla, and color",
   "7": "Dalya: Does not support %s color space. The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rgb, rec-2020",
   "8": "Dalya: Unsupported color values. Given color type %s includes NaN values. Color values should be number type",
-  "9": "Dalya: The value provided `%s` is out of range [%s, %s]",
-  "10": "Dalya: Color object in augmentColor({color}) should have color.main value. Error in color name: %s",
-  "11": "Dalya: color.main in augmentColor({color}) should be string type, but got %s type",
-  "12": "Dalya: Color object in augmentColor({color}) should have color[%s] value. Error in color name: %s"
+  "9": "Dalya: The value provided %s is out of range [%s, %s]",
+  "10": "Dalya: The color (%s) provided to augmentColor(color) is invalid. The color object needs to have color.main or color[%s] value",
+  "11": "Dalya: The color (%s) provided to augmentColor(color) is invalid. color.main should be a string type, but {%s} was provided instead"
 }

@@ -5,7 +5,7 @@ describe('capitalize', () => {
     expect(capitalize('hello')).toBe('Hello');
   });
 
-  it('throws an exception if argument is not string type', () => {
+  it('throws an exception when argument is not string type', () => {
     const errorSpy = jest.spyOn(console, 'error');
     capitalize(123);
     expect(errorSpy).toHaveBeenCalledTimes(1);

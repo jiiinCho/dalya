@@ -2,7 +2,7 @@ import { deepmerge } from 'dalya-utils';
 import { common, dark, grey, light } from 'dalya-components/colors';
 
 import { Palette, PaletteOptions } from './createPaletteTypes';
-import createPaletteUtils from './createPaletteUtils';
+import createPaletteUtils, { isColorNames } from './createPaletteUtils';
 
 /**
  * Returns palette object with default color values
@@ -21,9 +21,9 @@ function createPalette(palette: PaletteOptions): Palette {
     }
   }
 
-  const { getPaletteColor, getContrastText, safeAugmentColor } = createPaletteUtils;
+  const { getPaletteColor, getContrastText, safeAugmentColor } = createPaletteUtils(palette);
 
-  const { getDefaultAugmentPaletteColor } = getPaletteColor(palette);
+  const { getDefaultAugmentPaletteColor, getCustomAugmentPaletteColor } = getPaletteColor(palette);
 
   const paletteTargetObject = {
     // A collection of common colors
@@ -61,6 +61,11 @@ function createPalette(palette: PaletteOptions): Palette {
     // number between 0 to 1 or can be object, i.e. { light: 0.2, dark: 0.4 }
     tonalOffset,
     // Th light and dark mode object
+    getPaletteColor: (colorName: string) => {
+      return isColorNames(colorName)
+        ? getDefaultAugmentPaletteColor({ name: colorName })
+        : getCustomAugmentPaletteColor({ name: colorName });
+    },
     ...modes[mode],
   };
 
