@@ -23,7 +23,8 @@
     "build:types": "yarn tsc -b tsconfig.build.json",
     "test": "cd ../../ && yarn jest --testPathPattern=packages/dalya-components --config=jest.config.js",
     "storybook": "start-storybook -p 6006",
-    "build:storybook": "build-storybook"
+    "build:storybook": "build-storybook",
+    "error:write": "cd ../../ && yarn test"
   },
   "author": "jiiin✨",
   "license": "MIT",

@@ -91,6 +91,7 @@ class DalyaError implements DalyaErrorInterface {
     const foundErrorCode = this.errorCodesLookup[this.errorCodesRaw[0]];
     if (!foundErrorCode) {
       if (process.env.DALYA_EXTRACT_ERROR_CODES !== 'true') {
+        console.log('throw error?');
         throw new Error(
           `${this.errorCodesRaw[0]} is not found on DalyaErrorCodes.json.\nDid you forget to run 'yarn error:write?`,
         );

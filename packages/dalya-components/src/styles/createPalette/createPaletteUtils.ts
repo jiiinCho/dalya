@@ -40,7 +40,7 @@ function getContrastText(background: string, contrastThreshold = 3) {
 }
 
 function isSimplePaletteColorOptions(colorOptions: any): colorOptions is SimplePaletteColorOptions {
-  return Object.keys(colorOptions).length !== 0 && colorOptions.main;
+  return colorOptions.main || colorOptions.light || colorOptions.dark;
 }
 
 type AugmentColorConfig = {
@@ -52,21 +52,17 @@ type AugmentColorConfig = {
 function internalGetAugmentColor(augmentColorConfig: AugmentColorConfig) {
   const augmentColorHandler = {
     augmentColorConfig,
-    generateAugmentColor(baseColor: {
-      main: string;
-      light: string | undefined;
-      dark: string | undefined;
-    }) {
+    generateAugmentColor(baseColor: SimplePaletteColorOptions) {
       const { tonalOffsetLight, tonalOffsetDark, contrastThreshold } = this.augmentColorConfig;
-
-      return () => ({
+      return {
         main: baseColor.main,
         light: baseColor.light || lighten(baseColor.main, tonalOffsetLight),
         dark: baseColor.dark || darken(baseColor.main, tonalOffsetDark),
         contrastText: getContrastText(baseColor.main, contrastThreshold),
-      });
+      };
     },
   };
+
   return augmentColorHandler.generateAugmentColor.bind(augmentColorHandler);
 }
 
@@ -89,22 +85,21 @@ export function augmentColor({
     tonalOffsetDark,
     tonalOffsetLight,
   });
+
   if (isSimplePaletteColorOptions(color)) {
-    console.log('isSimplePalleteColorOptions', !color.main);
-    // this exception is for the use case without typescript support
+    // Error handling in case no typescript support
     if (!color.main) {
-      console.log('should throw error first');
       throw new DalyaError(
-        'Dalya: Color object in augmentColor({color}) should have `main` property. Error in color name: %s',
+        'Dalya: Color object in augmentColor({color}) should have color.main value. Error in color name: %s',
         String(name),
       );
     }
 
-    // this exception is for the use case without typescript support
+    // Error handling in case no typescript support
     if (typeof color.main !== 'string') {
       throw new DalyaError(
-        'Dalya: Typeof color.main in augmentColor({color}) should be a string, but got type `%s`',
-        JSON.stringify(color.main),
+        'Dalya: color.main in augmentColor({color}) should be string type, but got %s type',
+        String(typeof color.main),
       );
     }
 
@@ -112,15 +107,13 @@ export function augmentColor({
       main: color.main,
       light: color.light,
       dark: color.dark,
-    })();
+    });
   }
 
   const colorPartialMain = color[mainShade];
-  console.log('isSimplePcolorPartialMainalleteColorOptions', colorPartialMain);
-
   if (!colorPartialMain) {
     throw new DalyaError(
-      'Dalya: Color object in augmentColor({color}) should have `%s` property. Error in color name: %s',
+      'Dalya: Color object in augmentColor({color}) should have color[%s] value. Error in color name: %s',
       String(mainShade),
       String(name),
     );
@@ -130,13 +123,14 @@ export function augmentColor({
     main: colorPartialMain,
     light: color[lightShade],
     dark: color[darkShade],
-  })();
+  });
 }
 
 function safeAugmentColor(options: PaletteAugmentColorOptions): PaletteColor | null {
   try {
     return augmentColor(options);
   } catch (error: any) {
+    console.log('cannot be happen here');
     if (process.env.NODE_ENV !== 'production') {
       console.error(error?.stack || error);
     }

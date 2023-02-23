@@ -4,7 +4,7 @@ import DalyaError from './DalyaError';
 function capitalize(string: string): string {
   if (typeof string !== 'string') {
     throw new DalyaError(
-      'Dalya: `capitalize(string)` expects a string argument but got `capitalize(%s)`',
+      'Dalya: capitalize(string) expects a string argument but got capitalize(%s)',
       typeof string,
     );
   }

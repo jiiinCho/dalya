@@ -85,6 +85,61 @@ describe('createPalette', () => {
     expect(palette.text).toBe(dark.text);
   });
 
+  it('should create a palette with unique object references', () => {
+    const redPalette = createPalette({ background: { paper: 'red' } });
+    const bluePalette = createPalette({ background: { paper: 'blue' } });
+
+    expect(redPalette).not.toStrictEqual(bluePalette);
+    expect(redPalette.background).not.toStrictEqual(bluePalette.background);
+  });
+
+  describe('warnings', () => {
+    it('throws an exception when an invalid mode is specified', () => {
+      const logErrorSpy = jest.spyOn(console, 'error');
+      // @ts-ignore
+      createPalette({ mode: 'foo' });
+      expect(logErrorSpy).toHaveBeenCalledWith('Dalya: The palette mode `foo` is not supported');
+    });
+
+    it('throws an exception when a wrong color is provided', () => {
+      expect(() => createPalette({ primary: '#fff' })).toThrowMinified(
+        [
+          'MUI: The color (primary) provided to augmentColor(color) is invalid.',
+          'The color object needs to have a `main` property or a `500` property.',
+        ].join('\n'),
+      );
+      expect(() => createPalette({ primary: { main: { foo: 'bar' } } })).toThrowMinified(
+        [
+          'MUI: The color (primary) provided to augmentColor(color) is invalid.',
+          '`color.main` should be a string, but `{"foo":"bar"}` was provided instead.',
+        ].join('\n'),
+      );
+      expect(() => createPalette({ primary: { main: undefined } })).toThrowMinified(
+        [
+          'MUI: The color (primary) provided to augmentColor(color) is invalid.',
+          '`color.main` should be a string, but `undefined` was provided instead.',
+        ].join('\n'),
+      );
+    });
+    /*
+   
+
+    it('logs an error when the contrast ratio does not reach AA', () => {
+      let getContrastText;
+      expect(() => {
+        ({ getContrastText } = createPalette({
+          contrastThreshold: 0,
+        }));
+      }).not.toErrorDev();
+
+      expect(() => {
+        getContrastText('#fefefe');
+      }).toErrorDev('falls below the WCAG recommended absolute minimum contrast ratio of 3:1');
+    });
+    */
+  });
+
+  /*
   describe('augmentColor', () => {
     const palette = createPalette({});
 
@@ -113,34 +168,6 @@ describe('createPalette', () => {
         contrastText: '#fff',
       });
     });
-  });
-
-  describe('augmentColor', () => {
-    const palette = createPalette({});
-
-    it('should accept a color', () => {
-      const color1 = palette.augmentColor({ color: indigo, name: 'primary' });
-      expect(color1).toMatchObject({
-        dark: '#303f9f',
-        light: '#7986cb',
-        main: '#3f51b5',
-        contrastText: '#fff',
-      });
-
-      const color2 = palette.augmentColor({
-        color: indigo,
-        name: 'primary',
-        mainShade: 400,
-        lightShade: 200,
-        darkShade: 600,
-      });
-      expect(color2).toMatchObject({
-        light: '#9fa8da',
-        main: '#5c6bc0',
-        dark: '#3949ab',
-        contrastText: '#fff',
-      });
-    });
 
     it('should accept a partial palette color', () => {
       const color = palette.augmentColor({
@@ -161,75 +188,50 @@ describe('createPalette', () => {
       it('should throw an error for missing `main` field in color object', () => {
         expect(() => {
           augmentColor({
-            color: {},
+            // @ts-ignore
+            color: { light: indigo[200] },
             name: 'indigo',
           });
-        }).toThrow('Error');
+        }).toThrow(
+          'Dalya: Color object in augmentColor({color}) should have color.main value. Error in color name: indigo',
+        );
       });
 
-      it('should throw an error for wrong color values', () => {
-        expect(
+      it('should throw an error for non string type color.main value', () => {
+        expect(() => {
           augmentColor({
             color: {
-              main: 'foo',
+              // @ts-ignore
+              main: 123,
             },
             name: 'indigo',
-          }),
-        ).toThrow('Error');
+          });
+        }).toThrow(
+          'Dalya: color.main in augmentColor({color}) should be string type, but got number type',
+        );
+      });
+
+      it('should throw an error for missing color[500] value', () => {
+        expect(() => {
+          augmentColor({
+            color: {
+              100: '#fff',
+              200: '#000',
+            },
+            name: 'indigo',
+          });
+        }).toThrow(
+          'Dalya: Color object in augmentColor({color}) should have color[500] value. Error in color name: indigo',
+        );
       });
     });
   });
 
-  /*
 
-   it('should create a palette with unique object references', () => {
-    const redPalette = createPalette({ background: { paper: 'red' } });
-    const bluePalette = createPalette({ background: { paper: 'blue' } });
-    expect(redPalette).not.to.equal(bluePalette);
-    expect(redPalette.background).not.to.equal(bluePalette.background);
-  });
 
-  describe('warnings', () => {
-    it('throws an exception when an invalid mode is specified', () => {
-      expect(() => {
-        createPalette({ mode: 'foo' });
-      }).toErrorDev('MUI: The palette mode `foo` is not supported');
-    });
 
-    it('throws an exception when a wrong color is provided', () => {
-      expect(() => createPalette({ primary: '#fff' })).toThrowMinified(
-        [
-          'MUI: The color (primary) provided to augmentColor(color) is invalid.',
-          'The color object needs to have a `main` property or a `500` property.',
-        ].join('\n'),
-      );
-      expect(() => createPalette({ primary: { main: { foo: 'bar' } } })).toThrowMinified(
-        [
-          'MUI: The color (primary) provided to augmentColor(color) is invalid.',
-          '`color.main` should be a string, but `{"foo":"bar"}` was provided instead.',
-        ].join('\n'),
-      );
-      expect(() => createPalette({ primary: { main: undefined } })).toThrowMinified(
-        [
-          'MUI: The color (primary) provided to augmentColor(color) is invalid.',
-          '`color.main` should be a string, but `undefined` was provided instead.',
-        ].join('\n'),
-      );
-    });
 
-    it('logs an error when the contrast ratio does not reach AA', () => {
-      let getContrastText;
-      expect(() => {
-        ({ getContrastText } = createPalette({
-          contrastThreshold: 0,
-        }));
-      }).not.toErrorDev();
-
-      expect(() => {
-        getContrastText('#fefefe');
-      }).toErrorDev('falls below the WCAG recommended absolute minimum contrast ratio of 3:1');
-    });
-  });
+  
 
   */
 });

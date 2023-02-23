@@ -17,7 +17,7 @@ function createPalette(palette: PaletteOptions): Palette {
   const modes = { dark, light };
   if (process.env.NODE_ENV !== 'production') {
     if (!modes[mode]) {
-      console.error(`Dalya: The palette mode \`${mode}\` is not supported.`);
+      console.error(`Dalya: The palette mode \`${mode}\` is not supported`);
     }
   }
 

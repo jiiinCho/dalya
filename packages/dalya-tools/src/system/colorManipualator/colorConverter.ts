@@ -24,7 +24,7 @@ import {
 export function hexToRgb(color: string): string {
   if (!color.startsWith('#')) {
     throw new DalyaError(
-      'Dalya: Unsupported hex format. Should start with `#`(hash symbol) but got `%s`',
+      'Dalya: Unsupported hex format. Should start with #(hash symbol) but got %s',
       color,
     );
   }
@@ -35,7 +35,7 @@ export function hexToRgb(color: string): string {
   if (!unifiedHexValuesInArray) {
     if (process.env.NODE_ENV !== 'production') {
       throw new DalyaError(
-        'Dalya: Unsuppported hex input./nIt should be either three, six digits or eight digits but got `%s`',
+        'Dalya: Unsuppported hex input./nIt should be either three, six digits or eight digits but got %s',
         color,
       );
     }
@@ -75,7 +75,7 @@ export function recomposeColor(color: ColorObject): string {
     case 'color':
       return `${type}(${colorSpace} ${getCSS4ColorValues(values)})`;
     default:
-      throw new DalyaError('Dalya: Unsupported color type `%s`. Could not recomposed color', type);
+      throw new DalyaError('Dalya: Unsupported color type %s. Could not recomposed color', type);
   }
 }
 
@@ -99,7 +99,7 @@ export function decomposeColor(color: string | ColorObject): ColorObject {
   const isCSSColor = color.match(/(.*(?=))\((.*)\)/);
   if (!isCSSColor) {
     throw new DalyaError(
-      'Dalya: Unsupported CSS color `%s`. The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().',
+      'Dalya: Unsupported CSS color %s. The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().',
       color,
     );
   }
@@ -107,7 +107,7 @@ export function decomposeColor(color: string | ColorObject): ColorObject {
   const colorFormat = isCSSColor[1].toString(); // rgba
   if (!isValidColorFormat(colorFormat)) {
     throw new DalyaError(
-      'Dalya: Unsupported color format `%s`. The following formats are supported: rgb, rgba, hsl, hsla, and color.',
+      'Dalya: Unsupported color format %s. The following formats are supported: rgb, rgba, hsl, hsla, and color',
       colorFormat,
     );
   }
@@ -120,7 +120,7 @@ export function decomposeColor(color: string | ColorObject): ColorObject {
     const colorSpace = cssColorValuesInString.splice(0, 1).toString(); // display-p3
     if (!isValidColorSpace(colorSpace)) {
       throw new DalyaError(
-        'Dalya: Does not support `%s` color space. The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rgb, rec-2020',
+        'Dalya: Does not support %s color space. The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rgb, rec-2020',
         colorSpace,
       );
     }

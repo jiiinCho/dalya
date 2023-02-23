@@ -13,7 +13,7 @@ export function clamp(value: number, min = 0, max = 1): number {
   if (process.env.NODE_ENV !== 'production') {
     if (value < min || value > max) {
       throw new DalyaError(
-        'Dalya: The value provided `%s` is out of range [`%s`, `%s`].',
+        'Dalya: The value provided %s is out of range [%s, %s]',
         String(value),
         String(min),
         String(max),
@@ -67,7 +67,7 @@ export function colorObjectGenerator(color: ColorObjectGeneratorPrarams): {
     getColorObject(): ColorObject {
       if (this.color.values.includes(NaN)) {
         throw new DalyaError(
-          'Dalya: Unsupported color values. Given color type `%s` includes NaN values. Color values should be number type',
+          'Dalya: Unsupported color values. Given color type %s includes NaN values. Color values should be number type',
           this.color.type,
         );
       }

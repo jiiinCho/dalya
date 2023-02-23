@@ -1,11 +1,14 @@
 {
-  "1": "Dalya: `capitalize(string)` expects a string argument but got `capitalize(%s)`",
-  "2": "Dalya: Unsupported color type `%s`. Could not recomposed color",
-  "3": "Dalya: Unsupported hex format. Should start with `#`(hash symbol) but got `%s`",
-  "4": "Dalya: Unsuppported hex input./nIt should be either three, six digits or eight digits but got `%s`",
-  "5": "Dalya: Unsupported CSS color `%s`. The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().",
-  "6": "Dalya: Unsupported color format `%s`. The following formats are supported: rgb, rgba, hsl, hsla, and color.",
-  "7": "Dalya: Does not support `%s` color space. The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rgb, rec-2020",
-  "8": "Dalya: Unsupported color values. Given color type `%s` includes NaN values. Color values should be number type",
-  "9": "Dalya: The value provided `%s` is out of range [`%s`, `%s`]."
+  "1": "Dalya: capitalize(string) expects a string argument but got capitalize(%s)",
+  "2": "Dalya: Unsupported color type %s. Could not recomposed color",
+  "3": "Dalya: Unsupported hex format. Should start with #(hash symbol) but got %s",
+  "4": "Dalya: Unsuppported hex input./nIt should be either three, six digits or eight digits but got %s",
+  "5": "Dalya: Unsupported CSS color %s. The following formats are supported: #nnn, #nnnnnn, rgb(), rgba(), hsl(), hsla(), color().",
+  "6": "Dalya: Unsupported color format %s. The following formats are supported: rgb, rgba, hsl, hsla, and color",
+  "7": "Dalya: Does not support %s color space. The following color spaces are supported: srgb, display-p3, a98-rgb, prophoto-rgb, rec-2020",
+  "8": "Dalya: Unsupported color values. Given color type %s includes NaN values. Color values should be number type",
+  "9": "Dalya: The value provided `%s` is out of range [%s, %s]",
+  "10": "Dalya: Color object in augmentColor({color}) should have color.main value. Error in color name: %s",
+  "11": "Dalya: color.main in augmentColor({color}) should be string type, but got %s type",
+  "12": "Dalya: Color object in augmentColor({color}) should have color[%s] value. Error in color name: %s"
 }
