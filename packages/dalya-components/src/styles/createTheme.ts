@@ -7,11 +7,17 @@ import { DalyaError } from 'dalya-utils';
 
 import { Mixins, MixinsOptions } from './createMixins';
 import { Palette, PaletteOptions, createPalette } from './createPalette';
-import { Components } from './components';
+import { Typography, TypographyOptions } from './createTypography';
+import { Shadows } from './shadows';
+import { Transitions, TrnasitionsOptions } from './createTransitions';
 
+import { Components } from './components';
+// TODO
 export interface ThemeOptions extends Omit<SystemThemeOptions, 'zIndex'> {
   mixins?: MixinsOptions;
+  components?: Components<Omit<Theme, 'components'>>;
   palette?: PaletteOptions;
+  shadow?: Shadows;
 }
 
 interface BaseTheme extends SystemTheme {
