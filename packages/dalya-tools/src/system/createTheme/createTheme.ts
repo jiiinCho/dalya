@@ -24,12 +24,13 @@ export interface Theme {
   shape: Shape;
   breakpoints: Breakpoints;
   direction: Direction;
+  spacing: Spacing;
+  // below types will be defined in consumer, i.e. dalya-compoennts -> createTheme.ts
+  components?: Record<string, any>;
   mixins?: unknown;
   palette: Record<string, any> & { mode: 'light' | 'dark' };
   shadows?: unknown;
-  spacing: Spacing;
   transitions?: unknown;
-  components?: Record<string, any>;
   typography?: unknown;
   zIndex?: unknown;
 }

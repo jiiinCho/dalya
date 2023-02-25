@@ -84,7 +84,7 @@ const defaultPalette = createPalette({});
  * @see @link{https://m2.material.io/design/typography/the-type-system.html}
  * @see @link{https://m2.material.io/design/typography/understanding-typography.html}
  */
-type TypographyOptionCallback = (palette: Palette) => TypographyOptions;
+export type TypographyOptionCallback = (palette: Palette) => TypographyOptions;
 interface CreateTypographyParams {
   palette?: Palette;
   typography?: TypographyOptions | TypographyOptionCallback;

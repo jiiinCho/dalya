@@ -10,7 +10,7 @@ function createShadow(...px: number[]) {
   ].join(',');
 }
 
-type Shadows = ['none', ...string[]];
+export type Shadows = ['none', ...string[]];
 // Values from https://github.com/material-components/material-components-web/blob/be8747f94574669cb5e7add1a7c54fa41a89cec7/packages/mdc-elevation/_variables.scss
 export const shadows: Shadows = [
   'none',

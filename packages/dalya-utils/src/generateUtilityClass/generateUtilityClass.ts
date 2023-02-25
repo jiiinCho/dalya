@@ -1,23 +1,5 @@
 import ClassNameGenerator from '../ClassNameGenerator';
-
-export const stateClasses = [
-  'active',
-  'checked',
-  'completed',
-  'disabled',
-  'error',
-  'expanded',
-  'focused',
-  'focusVisible',
-  'required',
-  'selected',
-] as const;
-
-export type GlobalStateSlot = typeof stateClasses[number];
-
-const isStateClass = (state: any): state is GlobalStateSlot => {
-  return stateClasses.includes(state);
-};
+import { isStateClass } from '../consts';
 
 function generateUtilityClass(
   componentName: string,

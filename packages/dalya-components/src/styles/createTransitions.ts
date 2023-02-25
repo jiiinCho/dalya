@@ -7,11 +7,11 @@ interface Easing {
 
 // implementation refers to https://material.google.com/motion/duration-easing.html#duration-easing-natural-easing-curves
 export const easing: Easing = {
-  standard: 'cubic-bezier(0.4, 0.0, 0.2, 1)', // easeInOut
+  standard: 'cubic-bezier(0.4, 0, 0.2, 1)', // easeInOut
   // enters quickly and slowly decelerate to a resting point
-  decelerated: 'cubic-bezier(0.0, 0.0, 0.2, 1)', // easeOut
+  decelerated: 'cubic-bezier(0, 0, 0.2, 1)', // easeOut
   // the element starts at rest and ends at peak velocity
-  accelerated: 'cubic-bezier(0.4, 0.0, 1, 1)', // easeIn
+  accelerated: 'cubic-bezier(0.4, 0, 1, 1)', // easeIn
   // The sharp curve is used by objects that may return to the screen at any time
   sharp: 'cubic-bezier(0.4, 0, 0.6, 1)',
 };
