@@ -3,15 +3,17 @@ import {
   Theme as SystemTheme,
   ThemeOptions as SystemThemeOptions,
 } from 'dalya-system';
-import { DalyaError } from 'dalya-utils';
+import { DalyaError, deepmerge } from 'dalya-utils';
 
-import { Mixins, MixinsOptions } from './createMixins';
+import createMixins, { Mixins, MixinsOptions } from './createMixins';
 import { Palette, PaletteOptions, createPalette } from './createPalette';
-import { Typography, TypographyOptions } from './createTypography';
-import { Shadows } from './shadows';
-import { Transitions, TrnasitionsOptions } from './createTransitions';
+import createTypography from './createTypography';
+import { shadows } from './shadow';
+import createTransitions, { Transitions, TransitionsOptions } from './createTransitions';
 
 import { Components } from './components';
+
+
 // TODO
 export interface ThemeOptions extends Omit<SystemThemeOptions, 'zIndex'> {
   mixins?: MixinsOptions;
@@ -51,5 +53,29 @@ function createTheme(options: ThemeOptions = {}, ...args: object[]): Theme {
   const palette = createPalette(paletteInput);
   const systemTheme = systemCreateTheme(options);
 
-  ///
+  let dalyaTheme = deepmerge(systemTheme, {
+    mixins: createMixins(systemTheme.breakpoints, mixinsInput),
+    palette,
+    // Don't use [...shadows] until you've verified its transpiled code is not invoking the iterator protocol
+    shadows: shadows.slice(),
+    typography: createTypography(palette, typographyInput),
+    transitions: createTransitions(transitionsInput),
+    zIndex: { ...zIndex },
+  });
+
+  dalyaTheme = deepmerge(dalyaTheme, other);
+  dalyaTheme = args.reduce((acc, argument) => deepmerge(acc, argument), dalyaTheme);
+
+  if (process.env.NODE_ENV !== 'productions') {
+    const traverse = (node, component) => {
+      Object.keys(node).forEach((key) => {
+        const child = node[key];
+        if(stateClasses.indexOf(key) !== -1 && Object.keys(child).length > 0) {
+          if(process.env.NODE_ENV !== 'production') {
+            const stateClass = 
+          }
+        }
+      })
+    }
+  }
 }

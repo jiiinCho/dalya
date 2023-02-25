@@ -89,7 +89,7 @@ interface CreateTypographyParams {
   palette?: Palette;
   typography?: TypographyOptions | TypographyOptionCallback;
 }
-export default function createTypography(params: CreateTypographyParams): Typography {
+function createTypography(params: CreateTypographyParams): Typography {
   const { palette, typography } = params;
   const typographyParams = palette || defaultPalette;
 
@@ -178,3 +178,5 @@ export default function createTypography(params: CreateTypographyParams): Typogr
     { clone: false },
   );
 }
+
+export default createTypography;
